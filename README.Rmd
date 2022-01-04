@@ -6,6 +6,8 @@ html_preview: false
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
   fig.align = "center",
+  fig.width = 9,
+  fig.height = 9,
   dpi = 300,
   tidy = TRUE,
   collapse = TRUE,
@@ -127,7 +129,7 @@ bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
 
 In addition to the output shown above, a file with labels for reviewing events in `Audacity` is created (wrapping `seewave::write.audacity()`).
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.align='center', dpi=300, out.width = "1200px", fig.cap="Screenshot: Audacity raw labels"}
 knitr::include_graphics("inst/extdata/screenshot_1.PNG")
 ```
 
@@ -158,7 +160,7 @@ bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
 Output reviewed in `Audacity`
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.align='center', dpi=300, out.width = "1200px",  fig.cap="Screenshot: Audacity refined label"}
 knitr::include_graphics("inst/extdata/screenshot_2.PNG")
 ```
 

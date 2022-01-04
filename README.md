@@ -92,9 +92,9 @@ unique ctimes and mtimes).
 ## only simulate output as file is already labelled
 rename_recording(path = "example", format = "wav", recorder = "Sony PCM-D100", simulate = T)
 #>                                        old.name  seconds                time
-#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-01-04 01:32:45
+#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-01-04 02:00:04
 #>                                        new.name
-#> example/20211220_064253.wav 20220104_013245.wav
+#> example/20211220_064253.wav 20220104_020004.wav
 ```
 
 ### 2.) `split_wave`: Divide long recordings
@@ -166,7 +166,14 @@ bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
 In addition to the output shown above, a file with labels for reviewing
 events in `Audacity` is created (wrapping `seewave::write.audacity()`).
 
-<img src="inst/extdata/screenshot_1.PNG" width="269" style="display: block; margin: auto;" />
+<div class="figure" style="text-align: center">
+
+<img src="inst/extdata/screenshot_1.PNG" alt="Screenshot: Audacity raw labels" width="1200px" />
+<p class="caption">
+Screenshot: Audacity raw labels
+</p>
+
+</div>
 
 ### 4.) `extract_events`: Subset original recording file
 
@@ -195,7 +202,14 @@ bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
 
 Output reviewed in `Audacity`
 
-<img src="inst/extdata/screenshot_2.PNG" width="286" style="display: block; margin: auto;" />
+<div class="figure" style="text-align: center">
+
+<img src="inst/extdata/screenshot_2.PNG" alt="Screenshot: Audacity refined label" width="1200px" />
+<p class="caption">
+Screenshot: Audacity refined label
+</p>
+
+</div>
 
 ### 5.) `batch_process`: Execute several algorithms in batch mode
 
@@ -204,14 +218,14 @@ Run all above steps in one go and for all files within a folder
 ``` r
 batch_process(path = "example", format = "wav", segment = NULL, downsample = NULL, 
     SNR = 8, species = "Glaucidium passerinum", rename = FALSE)
-#> Start processing:     2022-01-04 01:33:05 
+#> Start processing:     2022-01-04 02:00:27 
 #> Search for events using Glaucidium passerinum as template ...
 #> done
 #> Extract events ... 
 #> 8 selections overlapped
 #> done
-#> Finished processing:  2022-01-04 01:33:07 
-#>  Run time:    1.8 seconds
+#> Finished processing:  2022-01-04 02:00:29 
+#>  Run time:    2.11 seconds
 #> In total 2 events for template Glaucidium passerinum detected
 #>              filename    from        to       starting_time   event
 #> 1 20211220_064253.wav  45.576  50.38133 2021-12-20 06:43:39  46.576
