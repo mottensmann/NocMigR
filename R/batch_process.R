@@ -115,7 +115,7 @@ batch_process <- function(
   ## 3.) Perform event detection
   ## ---------------------------------------------------------------------------
   if ("3" %in% steps) {
-    cat("Search for events using template ...\t")
+    cat("\nSearch for events using template ...\t")
 
     ## check if asked to perform task on segments instead of full file
     if (.onsplit == FALSE & !is.null(segment)) .onsplit <- TRUE
@@ -166,6 +166,7 @@ batch_process <- function(
     audacity <- list.files(path = path, full.names = T, pattern = "txt")
     ## kick out _extracted.txt if present
     audacity <- audacity[!stringr::str_detect(audacity, "_extracted.txt")]
+    audacity <- audacity[!stringr::str_detect(audacity, "merged_events.txt")]
 
     ## summarise number of events to check if realistic ...
     labels <- lapply(audacity, seewave::read.audacity)

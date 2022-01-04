@@ -9,7 +9,11 @@ merge_events <- function(path) {
   waves <- list.files(path, "extracted.WAV", full.names = T)
 
   ## extract audio --> CHECK OVERLAPPING ISSUES IF ANY
-  audio <- do.call("bind", lapply(waves, tuneR::readWave))
+  if (length(waves) == 1) {
+    audio <- tuneR::readWave(waves)
+  } else{
+    audio <- do.call("bind", lapply(waves, tuneR::readWave))
+  }
 
   ## write to file
   tuneR::writeWave(audio, file.path(path, "merged_events.WAV"))

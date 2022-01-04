@@ -40,6 +40,8 @@ extract_events <- function(threshold_detection,
     audio <- tuneR::readMP3(file)
     file <- stringr::str_replace(file, paste0(".", ext, collapse = ""), ".WAV")
     tuneR::writeWave(audio, filename = file)
+    ## update ext
+    ext <- tools::file_ext(file)
 
   } else {
     clean_wav <- FALSE
@@ -97,7 +99,8 @@ extract_events <- function(threshold_detection,
 
   ## concatenate sound
   audio <- do.call("bind", audio)
-  tuneR::writeWave(audio, stringr::str_replace(file, paste0(".", ext, collapse = ""), "_extracted.WAV"))
+  tuneR::writeWave(audio,
+                   stringr::str_replace(file, paste0(".", ext, collapse = ""), "_extracted.WAV"))
 
   ## write labels for use in Audacity
   ## adjust times for extracted audio file
