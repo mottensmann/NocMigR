@@ -25,7 +25,8 @@
 #' \bold{6.) If steps = 6 or 'merge_events':}
 #' Concatenates files holding extracted events along with their labels to merge the output of a project.
 #'
-#' @param path Path to a set of recordings (all same format and continuous time span).
+#' @param path Path to a set of recordings (all same format and continuous time span). Important note: File are expected to be named using a YYYYMMDD_HHMMSS string or set \code{reaname = TRUE} to allow renaming. Files including the extensions "_extracted.WAV" or "merged_events.WAV" are reserved to write output files and ignored as inputs.
+#'
 #' @param format Format of sound files (default WAV).
 #'
 #' @param steps Numeric or character vector, by default steps 1:5 are executed. (1 = \code{\link{rename_recording}}, 2 = \code{\link{split_wave}}, 3 = \code{\link{find_events}}, 4 = \code{\link{join_audacity}} & 5 = \code{\link{extract_events}}).
@@ -103,6 +104,10 @@ batch_process <- function(
   if ("2" %in% steps & !is.null(segment)) {
     cat("Split recordings ... \t")
     wavs <- list.files(path = path, pattern = format)
+    ## avoid files of previous run!
+    wavs <- wavs[!stringr::str_detect(wavs, "_extracted.WAV")]
+    wavs <- wavs[!stringr::str_detect(wavs, "merged_events.WAV")]
+
     for (i in wavs) {
       split_wave(file = i, path = path,
                  segment = segment, mono = mono, downsample = downsample)
@@ -150,6 +155,10 @@ batch_process <- function(
   if ("4" %in% steps & dir.exists(file.path(path, "split"))) {
     ## get all of the original wav files
     wavs <- list.files(path = path, full.names = F, pattern = format)
+    ## avoid files of previous run!
+    wavs <- wavs[!stringr::str_detect(wavs, "_extracted.WAV")]
+    wavs <- wavs[!stringr::str_detect(wavs, "merged_events.WAV")]
+
     ## ignore files that do not match the date_time string
     wavs <- has_date_time_name(wavs)
     cat("Join audacity marks ...\t")
