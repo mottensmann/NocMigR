@@ -1,16 +1,16 @@
 
-## NocMigR
+## NocMigR package
 
 ------------------------------------------------------------------------
 
 This package is in a *very* preliminary state and provides some
 workflows for processing large sound files (e.g., `NocMig`, `NFC`,
-`AudioMoth`), with a main emphasis on automatise the detection of events
-(i.e., extracting calls with time-stamps) that can be easily reviewed in
-[Audacity](https://www.audacityteam.org/).
+`AudioMoth`), with a main emphasis on automatising the detection of
+events (i.e., extracting calls with time-stamps) that can be easily
+reviewed in [Audacity](https://www.audacityteam.org/).
 
-All major computation steps are carried out by sophisticated libraries
-called in the background. Including:
+**All major computation steps are carried out by sophisticated libraries
+called in the background. Including:**
 
 -   **R packages**
 
@@ -34,7 +34,7 @@ To install the package, use …
 devtools::install_github("mottensmann/NocMigR")
 ```
 
-## Examples
+## Examples and documentation of main functions
 
 ------------------------------------------------------------------------
 
@@ -49,24 +49,28 @@ library(NocMigR)
 The package contains an example file captured using an
 [AudioMoth](https://www.openacousticdevices.info/) recorder. To reduce
 file size, a segment of five minutes was downsampled to 44.1 kHz and
-saved as 128 kbps mp3 file.
+saved as 128 kbps mp3 file. In addition to a lot of noise there is short
+segment of interest (scale call of a Eurasian Pygmy Owl *Glaucidium
+passerinum*).
 
 ``` r
 ## get path to test_audio.mp3
 path <- system.file("extdata", "20211220_064253.mp3", package = "NocMigR")
 ## create temp folder
 dir.create("example")
-#> Warning in dir.create("example"): 'example' already exists
 ## copy to test_folder
 file.copy(path, "example")
 ## convert to wav
 bioacoustics::mp3_to_wav("example/20211220_064253.mp3", delete = T)
 ```
 
-Plot spectro …
+Plot spectro to see there is a lot of noise and a few spikes reflecting
+actual signals …
 
 ``` r
+## read audio
 audio <- tuneR::readWave("example/20211220_064253.wav")
+## plot spectrum
 bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
 ```
 
@@ -75,35 +79,37 @@ bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
 ### 1.) `rename_recording`
 
 Naming files using a string that combines the recording date and
-starting time (`YYYYMMDD_HHMMSS`) is good practice to store and analyse
-the audio data. By default, recorders such as the
-[AudioMoth](https://www.openacousticdevices.info/) follow this
-conventions, whereas popular field recorders (e.g., Olympus LS, Tascam
-DR or Sony PCM) use different, rather uninformative naming schemes.
-Usually the relevant information to construct a proper date\_time string
-is embedded in the meta data of the recording (accessible using
-`file.info()`). *Note*, recorders may differ in the routines to save
-audio to a memory card. For instance, long recording sessions using an
-Olympus LS-3 will create multiple files, all of which share the same
-creation and modification times (with respect to the first recording).
-By contrast, the Sony PCM-D100 saves files individuals (i.e, all have
-unique ctimes and mtimes).
+starting time (`YYYYMMDD_HHMMSS`) is convenient for archiving and
+analysing audio files (e.g, default of
+[AudioMoth](https://www.openacousticdevices.info/)). Some (most?) of the
+popular field recorders (e.g., Olympus LS, Tascam DR or Sony PCM) use
+different, rather uninformative naming schemes (date and number at
+best), but the relevant information to construct a proper date\_time
+string is embedded in the meta data of the recording (accessible using
+`file.info()`, but requires correct settings of the internal clock!).
+For instance, long recording sessions using an Olympus LS-3 will create
+multiple files, all of which share the same creation and modification
+times (with respect to the first recording). By contrast, the Sony
+PCM-D100 saves files individuals (i.e, all have unique ctimes and
+mtimes). Presets to rename files are available for both types described
+here.
 
 ``` r
 ## only simulate output as file is already labelled
 rename_recording(path = "example", format = "wav", recorder = "Sony PCM-D100", simulate = T)
 #>                                        old.name  seconds                time
-#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-01-04 16:50:16
+#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-01-04 17:24:34
 #>                                        new.name
-#> example/20211220_064253.wav 20220104_165016.wav
+#> example/20211220_064253.wav 20220104_172434.wav
 ```
 
 ### 2.) `split_wave`: Divide long recordings
 
-Function is in a *beta-state* and allows to split long audio recordings
-into smaller chunks for processing with
-`bioacoustics::threshold_detection`. *To keep the time information,
-files are written with the corresponding starting time*
+This function allows to split long audio recordings into smaller chunks
+for processing with `bioacoustics::threshold_detection`. To keep the
+time information, files are written with the corresponding starting
+time. \*The task is performed using a python script queried using
+[reticulate](https://cran.r-project.org/package=reticulate)
 
 ``` r
 ## split in segments
@@ -128,12 +134,14 @@ unlink("example/split", recursive = TRUE)
 ### 3.) `find events`: Identify signals of interest
 
 This functions is a wrapper to `bioacoustics::threshold_detection()`
-aiming at extracting calls based on the signal to noise ratio and
+aiming at extracting calls based on the signal to noise ratio and some
 target-specific assumptions about approximate call frequencies and
 durations. Check `?bioacoustics::threshold_detection()` for details.
-*For long recordings (i.e, several hours) it makes sense to run on
-segments as created before to avoid memory issues. Here we use the demo
-sound file*
+**Note, only some of the parameters that are defined in
+`bioacoustics::threshold_detection()` are used right know**. *For long
+recordings (i.e, several hours) it makes sense to run on segments as
+created before to avoid memory issues. Here we use the demo sound file
+as it is*
 
 ``` r
 ## run detection threshold algorithm
@@ -154,7 +162,7 @@ head(TD$data$event_data[,c("filename", "starting_time", "duration", "freq_max_am
 #> 5 20211220_064253.wav  00:00:48.774  91.42857     1964.311
 #> 6 20211220_064253.wav  00:00:49.332  21.04308     2264.046
 
-## display spectrogram based on first six events
+## display spectrogram based on approximate location of first six events
 audio <- tuneR::readWave("example/20211220_064253.wav",
                          from = 46,
                          to = 50,
@@ -180,11 +188,12 @@ Screenshot: Audacity raw labels
 
 Refines the output of `find_events` by first adding a buffer (default 1
 second on both sides of the event) and subsequently merging overlapping
-selections to simplify the output. Additionally, allows to filter based
-on expected frequencies (i.e., checks maximum amplitude frequency is
-within the frequency band defined by HPF:LPF)
+selections to make the output more pretty. Additionally, allows to
+filter based on expected frequencies (i.e., checks maximum amplitude
+frequency is within the frequency band defined by `HPF:LPF`)
 
 ``` r
+## extract events based on object TD
 df <- extract_events(threshold_detection = TD, path = "example", format = "wav", 
     LPF = 4000, HPF = 1000, buffer = 1)
 #> 6 selections overlapped
@@ -201,7 +210,7 @@ bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
 
 <img src="inst/README-unnamed-chunk-11-1.png" style="display: block; margin: auto;" />
 
-Output reviewed in `Audacity`
+Output reviewed in `Audacity` (note that events were grouped to one).
 
 <div class="figure" style="text-align: center">
 
@@ -228,13 +237,13 @@ batch_process(
                       LPF = 5000, # low-pass filter at 500 Hz
                       HPF = 1000),
   rename = FALSE)
-#> Start processing:     2022-01-04 16:57:21 
+#> Start processing:     2022-01-04 17:24:57 
 #> Search for events using template ... done
 #> Extract events ... 
 #> 8 selections overlapped
 #> done
-#> Finished processing:  2022-01-04 16:57:23 
-#>  Run time:    1.52 seconds
+#> Finished processing:  2022-01-04 17:25:00 
+#>  Run time:    2.1 seconds
 #> Merge events and write audio example/merged_events.WAV
 #> In total 2 events detected
 #>              filename    from        to       starting_time   event
