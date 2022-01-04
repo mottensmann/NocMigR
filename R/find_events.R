@@ -1,0 +1,115 @@
+#' Wrapper to call bioacoustics::threshold_detection
+#'
+#' @description
+#' Queries bioacoustics::\code{\link[bioacoustics]{threshold_detection}} to detect events in a audio file and exports labels to explore the file in audacity
+#'
+#' @param wav.file Audio file. Currently supported are WAV or MP3 files.
+#' @param overwrite logical
+#' @inheritParams bioacoustics::threshold_detection
+#' @return list (see \code{\link[bioacoustics]{threshold_detection}})
+#' @export
+#'
+find_events <- function(wav.file = NULL,
+                        overwrite = TRUE,
+                        threshold = 10,
+                        min_dur = 10,
+                        max_dur = 5000,
+                        min_TBE = 40,
+                        max_TBE = Inf,
+                        EDG = 0.996,
+                        LPF = 15000,
+                        HPF = 80,
+                        FFT_size = 1024,
+                        FFT_overlap = 0.875,
+                        start_thr = 20,
+                        end_thr = 48,
+                        SNR_thr = 4,
+                        angle_thr = 125,
+                        duration_thr = 80,
+                        NWS = 1500,
+                        KPE = 1e-05,
+                        KME = 1e-05,
+                        spectro_dir = "data",
+                        time_scale = 2) {
+
+
+  ## get file extension
+  ## ---------------------------------------------------------------------------
+  file_format <- tools::file_ext(wav.file)
+
+  ## check if execution is needed
+  ## ---------------------------------------------------------------------------
+  check <- TRUE
+
+  if (overwrite == FALSE) {
+    txt <- paste0(substr(wav.file, 1, nchar(wav.file) - nchar(tools::file_ext(wav.file))),"txt")
+    if (file.exists(txt)) {
+      cat(txt, "already exists. Skip recording\n")
+      check <- FALSE
+    }
+  }
+
+  if (check == TRUE) {
+    TD <- suppressWarnings(bioacoustics::threshold_detection(
+      wave = wav.file,
+      threshold = threshold,
+      min_dur = min_dur,
+      max_dur = max_dur,
+      min_TBE = min_TBE,
+      max_TBE = max_TBE,
+      time_exp = 1,
+      LPF = LPF,
+      HPF = HPF,
+      start_thr = start_thr,
+      end_thr = end_thr,
+      SNR_thr = SNR_thr,
+      angle_thr = angle_thr,
+      duration_thr = duration_thr,
+      NWS = NWS,
+      settings = TRUE,
+      acoustic_feat = TRUE,
+      metadata = FALSE,
+      spectro_dir = NULL,
+      time_scale = 2,
+      ticks = TRUE))
+
+    if (!is.null(TD$data)) {
+      ## write audacity marks based on events: times in seconds
+      ## -----------------------------------------------------------------------------
+
+      ## ask if file has had date_time header for pretty labels
+      head <- stringr::str_remove(TD$data$event_data$filename, paste0(".", file_format))
+
+      if (all(nchar(head) == 15) &
+          is.numeric(as.numeric(substr(head, 1, 8))) &
+          is.numeric(as.numeric(substr(head, 10, 15)))) {
+        origin <- lubridate::make_datetime(
+          year = substr(head, 1, 4),
+          month = substr(head, 5, 6),
+          day = substr(head, 7, 8),
+          hour = substr(head, 10, 11),
+          min =  substr(head, 12, 13),
+          sec = substr(head, 14, 15))
+      } else {
+        origin <- lubridate::make_datetime(2000, 01, 01, 0, 0, 0)
+      }
+
+      ##
+      t <- TD$data$event_data$starting_time
+      t1 <-
+        (as.numeric(substr(t, 1,2)) * 60 * 60) +
+        (as.numeric(substr(t, 4,5)) * 60) +
+        as.numeric(substr(t, 7,12))
+      t2 <- t1 + (TD$data$event_data$duration / 1000)
+      f1 <- TD$data$event_data$freq_center
+      f2 <- TD$data$event_data$freq_max_amp
+      label <- origin + t1
+      dff <- data.frame(label, t1, t2, f1, f2)
+      seewave::write.audacity(
+        dff,
+        filename = paste0(substr(
+          wav.file, 1, nchar(wav.file) - nchar(tools::file_ext(wav.file))),"txt"))
+    }
+    return(TD)
+  }
+}

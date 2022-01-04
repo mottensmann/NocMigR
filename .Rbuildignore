@@ -1,0 +1,6 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+internal
+debugger.R
+NocMigApp
+README.Rmd

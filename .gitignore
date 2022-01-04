@@ -1,0 +1,9 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+internal
+.wav
+data/
+debugger.R
+NocMigApp/

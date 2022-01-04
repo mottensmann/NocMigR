@@ -1,0 +1,186 @@
+---
+output: github_document
+html_preview: false
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  fig.align = "center",
+  dpi = 300,
+  tidy = TRUE,
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "inst/README-",
+  cache = FALSE
+)
+```
+
+## NocMigR 
+___
+
+This package is in a *very* preliminary state and provides some workflows for processing large sound files (e.g., `NocMig`, `NFC`, `AudioMoth`), with a main emphasis on automatise the detection of events (i.e., extracting calls with time-stamps) that can be easily reviewed in [Audacity](https://www.audacityteam.org/).
+
+All major computation steps are carried out by sophisticated libraries called in the background. Including:
+
+
+* **R packages**
+* [bioacoustics](https://cran.r-project.org/package=bioacoustics)
+* [tuneR](https://cran.r-project.org/package=tuneR)
+* [seewave](https://cran.r-project.org/package=seewave)
+* [Warbler](https://cran.r-project.org/package=warbleR)
+
+* **python packages**
+* [audioop](https://docs.python.org/3/library/audioop.html)
+* [pydub](https://github.com/jiaaro/pydub)
+
+To install the package, use ...
+
+```{r, eval=FALSE}
+devtools::install_github("mottensmann/NocMigR")
+```
+
+## Examples
+___
+
+Load the package once installed ...
+
+```{r}
+library(NocMigR)
+```
+
+### Load example audio
+
+The package contains an example file captured using an [AudioMoth](https://www.openacousticdevices.info/) recorder. To reduce file size, a segment of five minutes was downsampled to 44.1 kHz and saved as 128 kbps mp3 file.
+
+```{r, results='hide'}
+## get path to test_audio.mp3
+path <- system.file("extdata", "20211220_064253.mp3", package = "NocMigR")
+## create temp folder
+dir.create("example")
+## copy to test_folder
+file.copy(path, "example")
+## convert to wav
+bioacoustics::mp3_to_wav("example/20211220_064253.mp3", delete = T)
+```
+
+Plot spectro ... 
+
+```{r}
+audio <- tuneR::readWave("example/20211220_064253.wav")
+bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
+```
+
+
+### 1.) `rename_recording`
+
+Naming files using a string that combines the recording date and starting time (`YYYYMMDD_HHMMSS`) is good practice to store and analyse the audio data. By default, recorders such as the [AudioMoth](https://www.openacousticdevices.info/) follow this conventions, whereas popular field recorders (e.g., Olympus LS, Tascam DR or Sony PCM) use different, rather uninformative naming schemes. Usually the relevant information to construct a proper date_time string is embedded in the meta data of the recording (accessible using `file.info()`). *Note*, recorders may differ in the routines to save audio to a memory card. For instance, long recording sessions using an Olympus LS-3 will create multiple files, all of which share the same creation and modification times (with respect to the first recording). By contrast, the Sony PCM-D100 saves files individuals (i.e, all have  unique ctimes and mtimes). 
+
+```{r}
+## only simulate output as file is already labelled
+rename_recording(path = "example",
+                 format = "wav",
+                 recorder = "Sony PCM-D100",
+                 simulate = T)
+```
+
+### 2.) `split_wave`: Divide long recordings 
+
+Function is in a *beta-state* and allows to split long audio recordings into smaller chunks for processing with `bioacoustics::threshold_detection`. *To keep the time information, files are written with the corresponding starting time*
+
+
+```{r}
+## split in segments
+split_wave(file = "20211220_064253.wav", # which file
+           path = "example", # where to find it
+           segment = 30, # cut in 30 sec segments
+           downsample = 32000) # resample at 32000
+
+## show files
+list.files("example/split/")
+## delete folder
+unlink("example/split", recursive = TRUE)
+```
+### 3.) `find events`: Identify signals of interest
+
+This functions is a wrapper to `bioacoustics::threshold_detection()` aiming at extracting calls based on the signal to noise ratio and target-specific assumptions about approximate call frequencies and durations. Check `?bioacoustics::threshold_detection()` for details.
+*For long recordings (i.e, several hours) it makes sense to run on segments as created before to avoid memory issues. Here we use the demo sound file*
+
+```{r}
+## run detection threshold algorithm
+TD <- find_events(wav.file = "example/20211220_064253.wav",
+                  threshold = 8, # Signal-to-noise ratio in db
+                  min_dur = 20, # min length in ms
+                  max_dur = 300, # max length in ms
+                  LPF = 5000, # low-pass filter at 500 Hz
+                  HPF = 1000) # high-pass filter at 4 kHz
+
+## Review events 
+head(TD$data$event_data[,c("filename", "starting_time", "duration", "freq_max_amp")])
+
+## display spectrogram based on first six events
+audio <- tuneR::readWave("example/20211220_064253.wav",
+                         from = 46,
+                         to = 50,
+                         units = "seconds")
+bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
+```
+
+In addition to the output shown above, a file with labels for reviewing events in `Audacity` is created (wrapping `seewave::write.audacity()`).
+
+```{r, echo=FALSE}
+knitr::include_graphics("inst/extdata/screenshot_1.PNG")
+```
+
+
+### 4.) `extract_events`: Subset original recording file
+
+Refines the output of `find_events` by first adding a buffer (default 1 second on both sides of the event) and subsequently merging overlapping selections to simplify the output. Additionally, allows to filter based on expected frequencies (i.e., checks maximum amplitude frequency is within the frequency band defined by HPF:LPF)
+
+```{r}
+df <- extract_events(threshold_detection = TD, 
+                     path = "example",
+                     format = "wav",
+                     LPF = 4000,
+                     HPF = 1000,
+                     buffer = 1)
+```
+Display refined events ...
+
+```{r}
+## display spectrogram based on first six events
+audio <- tuneR::readWave("example/20211220_064253.wav", 
+                         from = df$from,
+                         to = df$to,
+                         units = "seconds")
+bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
+```
+
+Output reviewed in `Audacity`
+
+
+```{r, echo=FALSE}
+knitr::include_graphics("inst/extdata/screenshot_2.PNG")
+```
+
+### 5.) `batch_process`: Execute several algorithms in batch mode 
+
+Run all above steps in one go and for all files within a folder
+
+```{r}
+batch_process(
+  path = "example",
+  format = "wav",
+  segment = NULL,
+  downsample = NULL,
+  SNR = 8,
+  species = "Glaucidium passerinum",
+  rename = FALSE)
+```
+
+___
+
+```{r}
+## clean-up 
+unlink("example", recursive = TRUE)
+```
+
