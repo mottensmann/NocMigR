@@ -8,7 +8,6 @@ check <- batch_process(
   segment = NULL,
   downsample = NULL,
   SNR = 8,
-
   target = td_presets("Glaucidium passerinum"),
   rename = FALSE)
 
