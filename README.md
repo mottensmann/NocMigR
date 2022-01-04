@@ -98,9 +98,9 @@ here.
 ## only simulate output as file is already labelled
 rename_recording(path = "example", format = "wav", recorder = "Sony PCM-D100", simulate = T)
 #>                                        old.name  seconds                time
-#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-01-04 17:24:34
+#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-01-05 00:38:42
 #>                                        new.name
-#> example/20211220_064253.wav 20220104_172434.wav
+#> example/20211220_064253.wav 20220105_003842.wav
 ```
 
 ### 2.) `split_wave`: Divide long recordings
@@ -237,13 +237,14 @@ batch_process(
                       LPF = 5000, # low-pass filter at 500 Hz
                       HPF = 1000),
   rename = FALSE)
-#> Start processing:     2022-01-04 17:24:57 
+#> Start processing:     2022-01-05 00:39:10 
+#> 
 #> Search for events using template ... done
 #> Extract events ... 
 #> 8 selections overlapped
 #> done
-#> Finished processing:  2022-01-04 17:25:00 
-#>  Run time:    2.1 seconds
+#> Finished processing:  2022-01-05 00:39:13 
+#>  Run time:    3.12 seconds
 #> Merge events and write audio example/merged_events.WAV
 #> In total 2 events detected
 #>              filename    from        to       starting_time   event
