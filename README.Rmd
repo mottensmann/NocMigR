@@ -12,8 +12,7 @@ knitr::opts_chunk$set(
   tidy = TRUE,
   collapse = TRUE,
   comment = "#>",
-  fig.path = "inst/README-",
-  cache = TRUE
+  fig.path = "inst/README-"
 )
 ```
 
@@ -175,7 +174,10 @@ batch_process(
   segment = NULL,
   downsample = NULL,
   SNR = 8,
-  species = "Glaucidium passerinum",
+  target = data.frame(min_dur = 20, # min length in ms
+                      max_dur = 300, # max length in ms
+                      LPF = 5000, # low-pass filter at 500 Hz
+                      HPF = 1000),
   rename = FALSE)
 ```
 

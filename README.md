@@ -56,6 +56,7 @@ saved as 128 kbps mp3 file.
 path <- system.file("extdata", "20211220_064253.mp3", package = "NocMigR")
 ## create temp folder
 dir.create("example")
+#> Warning in dir.create("example"): 'example' already exists
 ## copy to test_folder
 file.copy(path, "example")
 ## convert to wav
@@ -92,9 +93,9 @@ unique ctimes and mtimes).
 ## only simulate output as file is already labelled
 rename_recording(path = "example", format = "wav", recorder = "Sony PCM-D100", simulate = T)
 #>                                        old.name  seconds                time
-#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-01-04 02:04:22
+#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-01-04 16:50:16
 #>                                        new.name
-#> example/20211220_064253.wav 20220104_020422.wav
+#> example/20211220_064253.wav 20220104_165016.wav
 ```
 
 ### 2.) `split_wave`: Divide long recordings
@@ -216,17 +217,26 @@ Screenshot: Audacity refined label
 Run all above steps in one go and for all files within a folder
 
 ``` r
-batch_process(path = "example", format = "wav", segment = NULL, downsample = NULL, 
-    SNR = 8, species = "Glaucidium passerinum", rename = FALSE)
-#> Start processing:     2022-01-04 02:04:43 
-#> Search for events using Glaucidium passerinum as template ...
-#> done
+batch_process(
+  path = "example",
+  format = "wav",
+  segment = NULL,
+  downsample = NULL,
+  SNR = 8,
+  target = data.frame(min_dur = 20, # min length in ms
+                      max_dur = 300, # max length in ms
+                      LPF = 5000, # low-pass filter at 500 Hz
+                      HPF = 1000),
+  rename = FALSE)
+#> Start processing:     2022-01-04 16:57:21 
+#> Search for events using template ... done
 #> Extract events ... 
 #> 8 selections overlapped
 #> done
-#> Finished processing:  2022-01-04 02:04:44 
-#>  Run time:    1.72 seconds
-#> In total 2 events for template Glaucidium passerinum detected
+#> Finished processing:  2022-01-04 16:57:23 
+#>  Run time:    1.52 seconds
+#> Merge events and write audio example/merged_events.WAV
+#> In total 2 events detected
 #>              filename    from        to       starting_time   event
 #> 1 20211220_064253.wav  45.576  50.38133 2021-12-20 06:43:39  46.576
 #> 2 20211220_064253.wav 152.434 156.35420 2021-12-20 06:45:26 153.434

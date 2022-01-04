@@ -17,7 +17,7 @@ rename_recording(
 
 \item{recorder}{Type of recorder}
 
-\item{format}{format of sound files. Either WAV (default) or mp3}
+\item{format}{Format of sound files (default WAV).}
 
 \item{time}{Either ctime or mtime}
 

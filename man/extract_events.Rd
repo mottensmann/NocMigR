@@ -16,9 +16,9 @@ extract_events(
 \arguments{
 \item{threshold_detection}{either class threshold_detection or path to audacity marks}
 
-\item{buffer}{buffer in seconds added to before and after the event}
+\item{buffer}{Buffer in seconds added to before and after the event (default 1). Controls also the detection of overlapping events.}
 
-\item{format}{format of sound files. Either WAV (default) or mp3}
+\item{format}{Format of sound files (default WAV).}
 
 \item{path}{where to look up the sound file}
 

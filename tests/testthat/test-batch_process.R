@@ -8,8 +8,30 @@ check <- batch_process(
   segment = NULL,
   downsample = NULL,
   SNR = 8,
-  species = "Glaucidium passerinum",
+
+  target = td_presets("Glaucidium passerinum"),
   rename = FALSE)
+
+check2 <- batch_process(
+  path = path,
+  format = "mp3",
+  segment = NULL,
+  downsample = NULL,
+  SNR = 8,
+  steps = "find_events",
+  target = td_presets("Glaucidium passerinum"),
+  rename = FALSE)
+
+check3 <- batch_process(
+  path = path,
+  format = "mp3",
+  segment = NULL,
+  downsample = NULL,
+  SNR = 8,
+  steps = "split_wave",
+  target = td_presets("Glaucidium passerinum"),
+  rename = FALSE)
+
 
 unlink(list.files(path, pattern = "WAV", full.names = T))
 unlink(list.files(path, pattern = "txt", full.names = T))

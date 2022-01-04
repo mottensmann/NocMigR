@@ -2,20 +2,20 @@
 % Please edit documentation in R/td_presets.R
 \name{td_presets}
 \alias{td_presets}
-\title{Species-specific templates for use of automatised signal detection}
+\title{target-specific templates for use of automatised signal detection}
 \usage{
 td_presets(
-  species = c("Bubo bubo", "Strix aluco", "Glaucidium passerinum", "NocMig", "Shot")
+  target = c("Bubo bubo", "Strix aluco", "Glaucidium passerinum", "NocMig", "Shot")
 )
 }
 \arguments{
-\item{species}{name of specified target}
+\item{target}{name of specified target}
 }
 \value{
 data frame with specified parameters values for use with \code{\link{find_events}} or \code{\link[bioacoustics]{threshold_detection}}
 }
 \description{
-Bundles a few species-specific settings for using \code{\link[bioacoustics]{threshold_detection}} to detect audio signals (*not embarking on identifications*) based on approximate frequency bandwidth and duration of calls.
+Bundles a few target-specific settings for using \code{\link[bioacoustics]{threshold_detection}} to detect audio signals (*not embarking on identifications*) based on approximate frequency bandwidth and duration of calls.
 }
 \examples{
 ## Eagle owl Bubo bubo

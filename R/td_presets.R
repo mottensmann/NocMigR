@@ -1,8 +1,8 @@
-#' Species-specific templates for use of automatised signal detection
+#' target-specific templates for use of automatised signal detection
 #'
 #' @description
-#' Bundles a few species-specific settings for using \code{\link[bioacoustics]{threshold_detection}} to detect audio signals (*not embarking on identifications*) based on approximate frequency bandwidth and duration of calls.
-#' @param species name of specified target
+#' Bundles a few target-specific settings for using \code{\link[bioacoustics]{threshold_detection}} to detect audio signals (*not embarking on identifications*) based on approximate frequency bandwidth and duration of calls.
+#' @param target name of specified target
 #' @return data frame with specified parameters values for use with \code{\link{find_events}} or \code{\link[bioacoustics]{threshold_detection}}
 #' @examples
 #' ## Eagle owl Bubo bubo
@@ -22,10 +22,10 @@
 #'
 #' @export
 #'
-td_presets <- function(species = c("Bubo bubo", "Strix aluco", "Glaucidium passerinum", "NocMig", "Shot")) {
-  species <- match.arg(species)
+td_presets <- function(target = c("Bubo bubo", "Strix aluco", "Glaucidium passerinum", "NocMig", "Shot")) {
+  target <- match.arg(target)
 
-  if (species == "Bubo bubo") {
+  if (target == "Bubo bubo") {
     ## duration: median = 260 ms, 90% conf 224 - 289
     ## max amp freq: 512
 
@@ -37,7 +37,7 @@ td_presets <- function(species = c("Bubo bubo", "Strix aluco", "Glaucidium passe
     )
   }
 
-  if (species == "Strix aluco") {
+  if (target == "Strix aluco") {
     ## duration: median = 260 ms, 90% conf 224 - 289
     ## max amp freq: 512
 
@@ -49,7 +49,7 @@ td_presets <- function(species = c("Bubo bubo", "Strix aluco", "Glaucidium passe
     )
   }
 
-  if (species == "Glaucidium passerinum") {
+  if (target == "Glaucidium passerinum") {
     df <- data.frame(
       HPF = 1000,
       LPF = 5000,
@@ -58,7 +58,7 @@ td_presets <- function(species = c("Bubo bubo", "Strix aluco", "Glaucidium passe
     )
   }
 
-  if (species == "NocMig") {
+  if (target == "NocMig") {
     ## duration: median = 260 ms, 90% conf 224 - 289
     ## max amp freq: 512
 
@@ -70,7 +70,7 @@ td_presets <- function(species = c("Bubo bubo", "Strix aluco", "Glaucidium passe
     )
   }
 
-  if (species == "Shot") {
+  if (target == "Shot") {
     ## duration: median = 260 ms, 90% conf 224 - 289
     ## max amp freq: 512
 

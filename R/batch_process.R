@@ -5,47 +5,60 @@
 #' **Important note**:
 #' Especially for large sets of recordings (e.g., `AudioMoth` deployed for a weak, ~ 60 GB data) R can easily run into memory issues. This can surely be tackled by coding functions more efficiently. For now, the best way to handle this issue is to resume the script after it broke (see output in the console and check \code{steps} argument).
 #' @details
-#' By default, five consecutive steps (see \code{steps}) are undertaken to analyse recordings. All recordings of a project (i.e., continuous signal or time-expanded if otherwise) need to be saved to a single directory, specified \code{path}  argument:
+#' By default, runs all steps (currently five, see \code{steps}) of the analysis workflow consecutively. Recordings of a project (i.e., usually continuous signal or time-expanded if otherwise) need to be saved to a single directory, specified as \code{path} argument:
 #'
-#' 1.) Rename audio files to `YYYYMMDD_HHMMSS` format, where the date and time at the onset of the recording are coded by the file name. This steps ensures that all downstream algorithms can compute the correct dates and times of events. If files are already formatted correctly (e.g, capture by `AudioMoth`) this steps can be skipped by removing **"1"** from the vector \code{steps} (e.g., \code{steps = 2:5}). *This step utilises the function \code{\link[NocMigR]{rename_recording}}*
+#' \bold{1.) If steps = 1 or 'rename_audio':}
+#' Attempts to rename audio files to YYYYMMDD_HHMMSS format, where the date and time at the onset of the recording are coded in the file name. This steps ensures that all downstream algorithms can compute the correct dates and times of events. If files are already formatted correctly (e.g, capture by AudioMoth) this steps can be skipped (default behaviour) by either setting \code{rename = FALSE} and/or excluding '1' from \code{steps}. Internally, calls the function \code{\link{rename_recording}}.
 #'
-#' 2.) Split audio files in chunks of length \code{segment} to reduce the file size prior to calling event detection algorithms. Within the parent folder (\code{path}) a subfolder "split" is created to dump the files. Each file is named with the correct `YYYYMMDD_HHMMSS` string. If files are already formatted correctly (e.g, capture by `AudioMoth`) this steps can be skipped by removing **"2"** from the vector \code{steps} (e.g., \code{steps = 3:5}).*This step utilises the function \code{\link[NocMigR]{split_wave}}*
+#' \bold{2.) If steps = 2 or 'split_wave':}
+#' Attempts to split large audio files in chunks controlled by \code{segment} to reduce the file size prior to calling event detection algorithms. Within the parent folder (\code{path}) a sub folder "split" is created to dump the files. Each file is named with the correct `YYYYMMDD_HHMMSS` string. If files are already formatted correctly (e.g, capture by `AudioMoth`) this steps can be skipped by removing '2" from the vector \code{steps}. Internally, calls the function \code{\link{split_wave}}.
 #'
-#' 3.) Queries \code{\link[bioacoustics]{threshold_detection}} to detect events based on signal-to-noise ratios (\code{SNR}). When events are found, a `txt`file is written with labels for `Audacity`. *This step utilises the function \code{\link[NocMigR]{find_events}}*
-#' 4.) Extract events from original recordings and writes them to a WAVE file.
-#' *This step utilises the function \code{\link[NocMigR]{extract_events}}*
-#'#'
-#' @param path path to a set of recordings (all same format and continuous time span)
-#' @param format format of sound files. Either WAV (default) or mp3
-#' @param rename logical. By default renames files using date and time.
-#' @param time Controls, if ctime or mtime is used to compute date_time objects.
-#' @param segment Null, or numeric value giving segment size for split_wave in seconds.
-#' @param mono logical. By default, split_wave coerces stereo to mono prio to event detection.
-#' @param recorder currently three templates to ensure correct handling of times
-#' @param downsample Null or re-sampling factor used in split_wave.
-#' @param species species used as template to specify parameters in event detection by \code{\link[bioacoustics]{threshold_detection}}. See \code{\link[NocMigR]{td_presets}} for parameters and current implementations.
-#' @param SNR numeric value (db) giving signal to noise ratio in event detection.
-#' @param steps numeric vector, by default steps 1:5 are executed.
-#' @param max.events numeric, giving the maximum number of events before a file is skipped. Usually very high detection rates indicate an issue with noise (e.g., wind or rain)
+#' \bold{3.) If steps = 3 or 'find_events':}
+#' Queries bioacoustics::\code{\link[bioacoustics]{threshold_detection}} to detect events based on signal-to-noise ratios (\code{SNR}). When events are found, a `txt`file based on the file name of the recording is created with labels for reviewing in `Audacity`. Internally, calls the function \code{\link{find_events}}.
+#'
+#' \bold{4.) If steps = 4 or ''join_audacity':}
+#' If event detection is based on segmented files (i.e., sub folder 'split' exists), loops through text file containing Audacity labels and merges with respect to the original file (as matched by date and time overlap).
+#'
+#' \bold{5.) If steps = 5 or 'extract_events':}
+#' Extract events from (full-length recordings) and writes them to a a new wave file with extension 'extracted.wav'. Additionally, creates file with Audacity labels (extension extracted.txt).
+#'
+#' \bold{6.) If steps = 6 or 'merge_events':}
+#' Concatenates files holding extracted events along with their labels to merge the output of a project.
+#'
+#' @param path Path to a set of recordings (all same format and continuous time span).
+#' @param format Format of sound files (default WAV).
+#'
+#' @param steps Numeric or character vector, by default steps 1:5 are executed. (1 = \code{\link{rename_recording}}, 2 = \code{\link{split_wave}}, 3 = \code{\link{find_events}}, 4 = \code{\link{join_audacity}} & 5 = \code{\link{extract_events}}).
+#' @param rename Logical, allows to rename recordings (default FALSE).
+#' @param segment Null, or numeric value giving segment size for \code{\link{split_wave}} in seconds. (default NULL)
+#' @param mono Logical. By default, \code{\link{split_wave}} coerces stereo files to mono prior to event detection (default TRUE). If kept as stereo file the left channel will used in \code{\link{find_events}}.
+#' @param downsample Null or re-sampling factor used in \code{\link{split_wave}} (default NULL).
+#' @param SNR Numeric value (dB)  specifying signal to noise ratio for \code{\link{find_events}} (default 8).
+#' @param max.events Numeric, giving the maximum number of events before a file is skipped (default 999). Usually very high detection rates indicate an issue with noise (e.g., wind or rain).
+#' @param target data frame specifying parameter values used by \code{\link[bioacoustics]{threshold_detection}} to detect events. Values are parsed on as they are. Default is a call to \code{\link{td_presets}}.
+#' @param recorder Currently three templates to ensure correct handling of times. \bold{Only relevant if \code{rename = TRUE}!}.
+#' @param time Controls, if ctime or mtime is used to compute date_time objects. \bold{Only relevant if \code{rename = TRUE}!}
+#' @param .onsplit Logical. by default searches for sub folder split and bases analyses on segmented files if found. Also switched to TRUE if segment is not NULL.
+
 #' @inheritParams extract_events
-#' @return data frame with extracted events
+#' @return Data frame with extracted events if \code{\link{extract_events}} was queried.
 #' @export
 #'
 batch_process <- function(
   path = NULL,
   format = c("WAV", "wav", "mp3", "MP3"),
-  recorder = c("AudioMoth", "Olympus LS-3", "Sony PCM-D100"),
-  time = c("ctime", "mtime"),
+  steps = 1:6,
+  rename = FALSE,
   segment = NULL,
   mono = TRUE,
   downsample = NULL,
   SNR = 8,
-  steps = 1:5,
-  max.events = 200,
-  species = c("Bubo bubo", "Strix aluco", "NocMig", "Glaucidium passerinum",
-              "Shot"),
-  rename = TRUE,
-  buffer = 1) {
+  buffer = 1,
+  max.events = 999,
+  target = td_presets("Bubo bubo"),
+  recorder = c("AudioMoth", "Olympus LS-3", "Sony PCM-D100"),
+  time = c("ctime", "mtime"),
+  .onsplit = TRUE) {
 
   ## Stop the time ...
   ## ---------------------------------------------------------------------------
@@ -56,7 +69,7 @@ batch_process <- function(
   format <- match.arg(format)
   recorder <- match.arg(recorder)
   time <- match.arg(time)
-  species <- match.arg(species)
+  #target <- match.arg(target)
   if (!is.numeric(SNR)) stop("Specify a numeric value for parameter SNR")
   if (!is.null(segment)) {
     if (!is.numeric(segment)) stop("Specify a numeric value for parameter segment or NULL")
@@ -65,6 +78,17 @@ batch_process <- function(
     if (!is.numeric(downsample)) stop("Specify a numeric value for parameter downsample or NULL")
   }
   if (!dir.exists(path)) stop("Specify a valid path to sound files")
+  ## translate characters in steps to numeric (if any)
+  if (any(is.character(steps))) {
+    steps[steps == "rename_recording"] <- 1
+    steps[steps == "split_wave"] <- 2
+    steps[steps == "find_events"] <- 3
+    steps[steps == "join_audacity"] <- 4
+    steps[steps == "extract_events"] <- 5
+    steps[steps == "merge_events"] <- 6
+
+  }
+
 
   ## 1.) Rename if not AudioMoth
   ## ---------------------------------------------------------------------------
@@ -91,32 +115,32 @@ batch_process <- function(
   ## 3.) Perform event detection
   ## ---------------------------------------------------------------------------
   if ("3" %in% steps) {
-    preset <- td_presets(species = species)
-    cat("Search for events using", species, "as template ...\n")
+    cat("Search for events using template ...\t")
 
     ## check if asked to perform task on segments instead of full file
-    if (!is.null(segment)) {
-      if (!dir.exists(file.path(path, "split"))) stop("Folder split not found!")
+    if (.onsplit == FALSE & !is.null(segment)) .onsplit <- TRUE
+    if (.onsplit == TRUE & dir.exists(file.path(path, "split"))) {
+      #if (!dir.exists(file.path(path, "split"))) stop("Folder split not found!")
 
       TD <- pbapply::pblapply(list.files(file.path(path, "split"), pattern = format, full.names = T),
                               function(x) {
                                 find_events(wav.file = x,
                                             overwrite = TRUE,
                                             threshold = SNR,
-                                            min_dur = preset$min_dur,
-                                            max_dur = preset$max_dur,
-                                            HPF = preset$HPF,
-                                            LPF = preset$LPF)})
+                                            min_dur = target$min_dur,
+                                            max_dur = target$max_dur,
+                                            HPF = target$HPF,
+                                            LPF = target$LPF)})
     } else {
       TD <- lapply(list.files(path, pattern = format, full.names = T),
                    function(x) {
                      find_events(wav.file = x,
                                  overwrite = TRUE,
                                  threshold = SNR,
-                                 min_dur = preset$min_dur,
-                                 max_dur = preset$max_dur,
-                                 HPF = preset$HPF,
-                                 LPF = preset$LPF)})
+                                 min_dur = target$min_dur,
+                                 max_dur = target$max_dur,
+                                 HPF = target$HPF,
+                                 LPF = target$LPF)})
     }
 
     cat("done\n")
@@ -156,8 +180,8 @@ batch_process <- function(
                      buffer = buffer,
                      format = format,
                      path = path,
-                     HPF = preset$HPF,
-                     LPF = preset$LPF)
+                     HPF = target$HPF,
+                     LPF = target$LPF)
     output <- do.call("rbind", output)
     cat("\ndone\n")
   }
@@ -179,7 +203,13 @@ batch_process <- function(
     cat("\tRun time:\t", round(took$hours, 2), "hours\n")
   }
 
-  if ("5" %in% steps) cat("In total", nrow(output), "events for template", species, "detected")
-  return(output)
+  if ("6" %in% steps) {
+    cat("Merge events and write audio", file.path(path, "merged_events.WAV\n"))
+    merge_events(path = path)
+  }
+
+  if ("5" %in% steps) cat("In total", nrow(output), "events detected")
+
+  if (exists("output")) return(output)
 }
 

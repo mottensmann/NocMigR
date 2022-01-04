@@ -12,21 +12,16 @@ find_events(
   max_dur = 5000,
   min_TBE = 40,
   max_TBE = Inf,
-  EDG = 0.996,
   LPF = 15000,
   HPF = 80,
   FFT_size = 1024,
-  FFT_overlap = 0.875,
   start_thr = 20,
   end_thr = 48,
   SNR_thr = 4,
   angle_thr = 125,
-  duration_thr = 80,
   NWS = 1500,
-  KPE = 1e-05,
-  KME = 1e-05,
-  spectro_dir = "data",
-  time_scale = 2
+  time_scale = 2,
+  ...
 )
 }
 \arguments{
@@ -51,9 +46,6 @@ successive audio events is shorter than this window, they are ignored. The defau
 \item{max_TBE}{numeric. Maximum time window between two audio events in milliseconds (ms). If the time interval between two
 successive audio events is longer than this window, they are ignored. The default setting is 1000 ms.}
 
-\item{EDG}{numeric. Exponential Decay Gain from 0 to 1. Sets the degree of temporal masking at the end of each audio event.
-This filter avoids extracting noise or echoes at the end of the audio event. The default setting is 0.996.}
-
 \item{LPF}{integer. Low-Pass Filter (Hz). Frequencies above the cutoff are greatly attenuated.
 Default is set internally at the Nyquist frequency of the recording.}
 
@@ -61,8 +53,6 @@ Default is set internally at the Nyquist frequency of the recording.}
 Default setting is 16000 Hz. A default of 1000 Hz is recommended for most bird vocalizations.}
 
 \item{FFT_size}{integer. Size of the Fast Fourrier Transform (FFT) window. Default setting is 256.}
-
-\item{FFT_overlap}{numeric. Percentage of overlap between two FFT windows (from 0 to 1). Default setting is 0.875.}
 
 \item{start_thr}{integer. Right to left amplitude threshold (dB) for audio event extraction, from the audio event centroid.
 The last FFT where the amplitude level is equal or above this threshold is considered the start of the audio event.
@@ -78,26 +68,14 @@ Default setting is 10 dB. 8 dB is recommended for bird vocalizations.}
 \item{angle_thr}{integer. Angle threshold (Â°) at which the audio event extraction stops.
 Default setting is 40Â°. 125Â° is recommended for extracting bird vocalizations.}
 
-\item{duration_thr}{integer. Maximum duration threshold in milliseconds (ms) after which the monitoring of the background noise is resumed.
-Default setting is 80 ms for bat echolocation calls. A higher threshold value is recommended for extracting bird vocalizations.}
-
 \item{NWS}{integer. Length of the time window used for background noise estimation in the recording (ms).
 A longer window size is less sensitive to local variations in the background noise.
 Default setting is 100 ms.}
 
-\item{KPE}{numeric. Set the Process Error parameter of the Kalman filter.
-Default setting is 1e-05.}
-
-\item{KME}{numeric. Set the Measurement Error parameter of the Kalman filter.
-Default setting is 1e-05.}
-
-\item{spectro_dir}{character (path) or \code{NULL}. Generate an HTML page with the spectrograms numbered by order
-of detection in the recording. Spectrograms are generated as individual .PNG files and stored in the
-'spectro_dir/spectrograms' subdirectory. The R working directory is used if \code{spectro_dir} is \code{NULL}.
-\code{spectro_dir} is set to \code{NULL} by default.}
-
 \item{time_scale}{numeric. Time resolution of the spectrogram in milliseconds (ms) per pixel (px). Default setting is 0.1 ms for bat echolocation calls.
 A default of 2 ms/px is recommended for most bird vocalizations.}
+
+\item{...}{Not yet implemented! optional arguments passed on to \code{\link[bioacoustics]{threshold_detection}}.}
 }
 \value{
 list (see \code{\link[bioacoustics]{threshold_detection}})

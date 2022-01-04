@@ -1,7 +1,7 @@
 #' Extract detected events and writes them to a sound file
 #'
 #' @param threshold_detection either class threshold_detection or path to audacity marks
-#' @param buffer buffer in seconds added to before and after the event
+#' @param buffer Buffer in seconds added to before and after the event (default 1). Controls also the detection of overlapping events.
 #' @param path where to look up the sound file
 #' @return data frame
 #' @inheritParams rename_recording

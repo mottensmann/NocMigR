@@ -7,48 +7,51 @@
 batch_process(
   path = NULL,
   format = c("WAV", "wav", "mp3", "MP3"),
-  recorder = c("AudioMoth", "Olympus LS-3", "Sony PCM-D100"),
-  time = c("ctime", "mtime"),
+  steps = 1:6,
+  rename = FALSE,
   segment = NULL,
   mono = TRUE,
   downsample = NULL,
   SNR = 8,
-  steps = 1:5,
-  max.events = 200,
-  species = c("Bubo bubo", "Strix aluco", "NocMig", "Glaucidium passerinum", "Shot"),
-  rename = TRUE,
-  buffer = 1
+  buffer = 1,
+  max.events = 999,
+  target = td_presets("Bubo bubo"),
+  recorder = c("AudioMoth", "Olympus LS-3", "Sony PCM-D100"),
+  time = c("ctime", "mtime"),
+  .onsplit = TRUE
 )
 }
 \arguments{
-\item{path}{path to a set of recordings (all same format and continuous time span)}
+\item{path}{Path to a set of recordings (all same format and continuous time span).}
 
-\item{format}{format of sound files. Either WAV (default) or mp3}
+\item{format}{Format of sound files (default WAV).}
 
-\item{recorder}{currently three templates to ensure correct handling of times}
+\item{steps}{Numeric or character vector, by default steps 1:5 are executed. (1 = \code{\link{rename_recording}}, 2 = \code{\link{split_wave}}, 3 = \code{\link{find_events}}, 4 = \code{\link{join_audacity}} & 5 = \code{\link{extract_events}}).}
 
-\item{time}{Controls, if ctime or mtime is used to compute date_time objects.}
+\item{rename}{Logical, allows to rename recordings (default FALSE).}
 
-\item{segment}{Null, or numeric value giving segment size for split_wave in seconds.}
+\item{segment}{Null, or numeric value giving segment size for \code{\link{split_wave}} in seconds. (default NULL)}
 
-\item{mono}{logical. By default, split_wave coerces stereo to mono prio to event detection.}
+\item{mono}{Logical. By default, \code{\link{split_wave}} coerces stereo files to mono prior to event detection (default TRUE). If kept as stereo file the left channel will used in \code{\link{find_events}}.}
 
-\item{downsample}{Null or re-sampling factor used in split_wave.}
+\item{downsample}{Null or re-sampling factor used in \code{\link{split_wave}} (default NULL).}
 
-\item{SNR}{numeric value (db) giving signal to noise ratio in event detection.}
+\item{SNR}{Numeric value (dB)  specifying signal to noise ratio for \code{\link{find_events}} (default 8).}
 
-\item{steps}{numeric vector, by default steps 1:5 are executed.}
+\item{buffer}{Buffer in seconds added to before and after the event (default 1). Controls also the detection of overlapping events.}
 
-\item{max.events}{numeric, giving the maximum number of events before a file is skipped. Usually very high detection rates indicate an issue with noise (e.g., wind or rain)}
+\item{max.events}{Numeric, giving the maximum number of events before a file is skipped (default 999). Usually very high detection rates indicate an issue with noise (e.g., wind or rain).}
 
-\item{species}{species used as template to specify parameters in event detection by \code{\link[bioacoustics]{threshold_detection}}. See \code{\link[NocMigR]{td_presets}} for parameters and current implementations.}
+\item{target}{data frame specifying parameter values used by \code{\link[bioacoustics]{threshold_detection}} to detect events. Values are parsed on as they are. Default is a call to \code{\link{td_presets}}.}
 
-\item{rename}{logical. By default renames files using date and time.}
+\item{recorder}{Currently three templates to ensure correct handling of times. \bold{Only relevant if \code{rename = TRUE}!}.}
 
-\item{buffer}{buffer in seconds added to before and after the event}
+\item{time}{Controls, if ctime or mtime is used to compute date_time objects. \bold{Only relevant if \code{rename = TRUE}!}}
+
+\item{.onsplit}{Logical. by default searches for sub folder split and bases analyses on segmented files if found. Also switched to TRUE if segment is not NULL.}
 }
 \value{
-data frame with extracted events
+Data frame with extracted events if \code{\link{extract_events}} was queried.
 }
 \description{
 Main function of the package `NocMigR` that allows to analyse a suite of long-term recordings from scratch by executing five distinct steps (see `details` section.).*Under the hood*, this function is calling algorithms of the fabulous R packages \pkg{tuneR}, \pkg{warbleR}, \pkg{seewave} and \pkg{bioacoustics}.
@@ -56,14 +59,23 @@ Main function of the package `NocMigR` that allows to analyse a suite of long-te
 Especially for large sets of recordings (e.g., `AudioMoth` deployed for a weak, ~ 60 GB data) R can easily run into memory issues. This can surely be tackled by coding functions more efficiently. For now, the best way to handle this issue is to resume the script after it broke (see output in the console and check \code{steps} argument).
 }
 \details{
-By default, five consecutive steps (see \code{steps}) are undertaken to analyse recordings. All recordings of a project (i.e., continuous signal or time-expanded if otherwise) need to be saved to a single directory, specified \code{path}  argument:
+By default, runs all steps (currently five, see \code{steps}) of the analysis workflow consecutively. Recordings of a project (i.e., usually continuous signal or time-expanded if otherwise) need to be saved to a single directory, specified as \code{path} argument:
 
-1.) Rename audio files to `YYYYMMDD_HHMMSS` format, where the date and time at the onset of the recording are coded by the file name. This steps ensures that all downstream algorithms can compute the correct dates and times of events. If files are already formatted correctly (e.g, capture by `AudioMoth`) this steps can be skipped by removing **"1"** from the vector \code{steps} (e.g., \code{steps = 2:5}). *This step utilises the function \code{\link[NocMigR]{rename_recording}}*
+\bold{1.) If steps = 1 or 'rename_audio':}
+Attempts to rename audio files to YYYYMMDD_HHMMSS format, where the date and time at the onset of the recording are coded in the file name. This steps ensures that all downstream algorithms can compute the correct dates and times of events. If files are already formatted correctly (e.g, capture by AudioMoth) this steps can be skipped (default behaviour) by either setting \code{rename = FALSE} and/or excluding '1' from \code{steps}. Internally, calls the function \code{\link{rename_recording}}.
 
-2.) Split audio files in chunks of length \code{segment} to reduce the file size prior to calling event detection algorithms. Within the parent folder (\code{path}) a subfolder "split" is created to dump the files. Each file is named with the correct `YYYYMMDD_HHMMSS` string. If files are already formatted correctly (e.g, capture by `AudioMoth`) this steps can be skipped by removing **"2"** from the vector \code{steps} (e.g., \code{steps = 3:5}).*This step utilises the function \code{\link[NocMigR]{split_wave}}*
+\bold{2.) If steps = 2 or 'split_wave':}
+Attempts to split large audio files in chunks controlled by \code{segment} to reduce the file size prior to calling event detection algorithms. Within the parent folder (\code{path}) a sub folder "split" is created to dump the files. Each file is named with the correct `YYYYMMDD_HHMMSS` string. If files are already formatted correctly (e.g, capture by `AudioMoth`) this steps can be skipped by removing '2" from the vector \code{steps}. Internally, calls the function \code{\link{split_wave}}.
 
-3.) Queries \code{\link[bioacoustics]{threshold_detection}} to detect events based on signal-to-noise ratios (\code{SNR}). When events are found, a `txt`file is written with labels for `Audacity`. *This step utilises the function \code{\link[NocMigR]{find_events}}*
-4.) Extract events from original recordings and writes them to a WAVE file.
-*This step utilises the function \code{\link[NocMigR]{extract_events}}*
-#'
+\bold{3.) If steps = 3 or 'find_events':}
+Queries bioacoustics::\code{\link[bioacoustics]{threshold_detection}} to detect events based on signal-to-noise ratios (\code{SNR}). When events are found, a `txt`file based on the file name of the recording is created with labels for reviewing in `Audacity`. Internally, calls the function \code{\link{find_events}}.
+
+\bold{4.) If steps = 4 or ''join_audacity':}
+If event detection is based on segmented files (i.e., sub folder 'split' exists), loops through text file containing Audacity labels and merges with respect to the original file (as matched by date and time overlap).
+
+\bold{5.) If steps = 5 or 'extract_events':}
+Extract events from (full-length recordings) and writes them to a a new wave file with extension 'extracted.wav'. Additionally, creates file with Audacity labels (extension extracted.txt).
+
+\bold{6.) If steps = 6 or 'merge_events':}
+Concatenates files holding extracted events along with their labels to merge the output of a project.
 }

@@ -5,6 +5,7 @@
 #'
 #' @param wav.file Audio file. Currently supported are WAV or MP3 files.
 #' @param overwrite logical
+#' @param ... Not yet implemented! optional arguments passed on to \code{\link[bioacoustics]{threshold_detection}}.
 #' @inheritParams bioacoustics::threshold_detection
 #' @return list (see \code{\link[bioacoustics]{threshold_detection}})
 #' @export
@@ -16,22 +17,23 @@ find_events <- function(wav.file = NULL,
                         max_dur = 5000,
                         min_TBE = 40,
                         max_TBE = Inf,
-                        EDG = 0.996,
                         LPF = 15000,
                         HPF = 80,
                         FFT_size = 1024,
-                        FFT_overlap = 0.875,
                         start_thr = 20,
                         end_thr = 48,
                         SNR_thr = 4,
                         angle_thr = 125,
-                        duration_thr = 80,
                         NWS = 1500,
-                        KPE = 1e-05,
-                        KME = 1e-05,
-                        spectro_dir = "data",
-                        time_scale = 2) {
+                        time_scale = 2,
+                        ...) {
 
+  ## get optional arguments in any
+  ## ---------------------------------------------------------------------------
+  #mcall = as.list(match.call())[-1L]
+  ## check for optional arguments in the function call, take defaults, if missing
+  #arg_list <- list()
+ #do.call(FUN, args = c(list(x = x,y = y), mcall, list(...)))
 
   ## get file extension
   ## ---------------------------------------------------------------------------
@@ -64,7 +66,7 @@ find_events <- function(wav.file = NULL,
       end_thr = end_thr,
       SNR_thr = SNR_thr,
       angle_thr = angle_thr,
-      duration_thr = duration_thr,
+      #duration_thr = duration_thr,
       NWS = NWS,
       settings = TRUE,
       acoustic_feat = TRUE,
