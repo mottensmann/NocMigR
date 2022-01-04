@@ -92,9 +92,9 @@ unique ctimes and mtimes).
 ## only simulate output as file is already labelled
 rename_recording(path = "example", format = "wav", recorder = "Sony PCM-D100", simulate = T)
 #>                                        old.name  seconds                time
-#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-01-04 02:00:04
+#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-01-04 02:04:22
 #>                                        new.name
-#> example/20211220_064253.wav 20220104_020004.wav
+#> example/20211220_064253.wav 20220104_020422.wav
 ```
 
 ### 2.) `split_wave`: Divide long recordings
@@ -168,7 +168,7 @@ events in `Audacity` is created (wrapping `seewave::write.audacity()`).
 
 <div class="figure" style="text-align: center">
 
-<img src="inst/extdata/screenshot_1.PNG" alt="Screenshot: Audacity raw labels" width="1200px" />
+<img src="inst/extdata/screenshot_1.PNG" alt="Screenshot: Audacity raw labels" width="900px" />
 <p class="caption">
 Screenshot: Audacity raw labels
 </p>
@@ -204,7 +204,7 @@ Output reviewed in `Audacity`
 
 <div class="figure" style="text-align: center">
 
-<img src="inst/extdata/screenshot_2.PNG" alt="Screenshot: Audacity refined label" width="1200px" />
+<img src="inst/extdata/screenshot_2.PNG" alt="Screenshot: Audacity refined label" width="900px" />
 <p class="caption">
 Screenshot: Audacity refined label
 </p>
@@ -218,14 +218,14 @@ Run all above steps in one go and for all files within a folder
 ``` r
 batch_process(path = "example", format = "wav", segment = NULL, downsample = NULL, 
     SNR = 8, species = "Glaucidium passerinum", rename = FALSE)
-#> Start processing:     2022-01-04 02:00:27 
+#> Start processing:     2022-01-04 02:04:43 
 #> Search for events using Glaucidium passerinum as template ...
 #> done
 #> Extract events ... 
 #> 8 selections overlapped
 #> done
-#> Finished processing:  2022-01-04 02:00:29 
-#>  Run time:    2.11 seconds
+#> Finished processing:  2022-01-04 02:04:44 
+#>  Run time:    1.72 seconds
 #> In total 2 events for template Glaucidium passerinum detected
 #>              filename    from        to       starting_time   event
 #> 1 20211220_064253.wav  45.576  50.38133 2021-12-20 06:43:39  46.576
