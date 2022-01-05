@@ -11,8 +11,14 @@ cleanup_batch_process <- function(path = NULL) {
 
   ## check if subdir split exist
   if (dir.exists(file.path(path, "split"))) {
-    user_response <- readline(prompt = paste("Delete", file.path(path, "split"), "and all content [y/n]?"))
+    user_response <- readline(prompt = paste("Delete", file.path(path, "split"), "and all content [y/n]?\n"))
     if (user_response == "y") unlink(file.path(path, "split"), recursive = TRUE)
+  }
+
+  ## check if subdir split exist
+  if (dir.exists(file.path(path, "temp"))) {
+    user_response <- readline(prompt = paste("Delete", file.path(path, "temp"), "and all content [y/n]?\n"))
+    if (user_response == "y") unlink(file.path(path, "temp"), recursive = TRUE)
   }
 
   ## check if extracted files were written
@@ -20,7 +26,16 @@ cleanup_batch_process <- function(path = NULL) {
   extracted_path <- list.files(path, pattern = "extracted", full.names = T)
 
   if (length(extracted) > 0 ) {
-    user_response <- readline(prompt = "Delete extracted files [y/n]?")
+    user_response <- readline(prompt = "Delete extracted files [y/n]?\n")
+    if (user_response == "y") unlink(extracted_path)
+  }
+
+  # check if merged_events files were written
+  merged <- list.files(path, pattern = "merged.events")
+  extracted_path <- list.files(path, pattern = "merged.events", full.names = T)
+
+  if (length(merged) > 0 ) {
+    user_response <- readline(prompt = "Delete merged.event files [y/n]?\n")
     if (user_response == "y") unlink(extracted_path)
   }
 
