@@ -18,7 +18,7 @@ extract_events(
 
 \item{buffer}{Buffer in seconds added to before and after the event (default 1). Controls also the detection of overlapping events.}
 
-\item{format}{Format of sound files (default WAV).}
+\item{format}{Format of sound files (default and suggested is to use WAV).}
 
 \item{path}{where to look up the sound file}
 
