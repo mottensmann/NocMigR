@@ -112,6 +112,8 @@ find_events <- function(wav.file = NULL,
         filename = paste0(substr(
           wav.file, 1, nchar(wav.file) - nchar(tools::file_ext(wav.file))),"txt"))
     }
+    ## try to free memory
+    x <- gc(verbose = FALSE); rm(x)
     return(TD)
   }
 }

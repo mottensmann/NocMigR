@@ -129,6 +129,7 @@ extract_events <- function(threshold_detection,
       filename = stringr::str_replace(file, paste0(".", ext, collapse = ""), "_extracted.txt"))
 
   }
-
+  ## try to free memory
+  x <- gc(verbose = FALSE); rm(x)
   return(df)
 }
