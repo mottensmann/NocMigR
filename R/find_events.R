@@ -52,7 +52,7 @@ find_events <- function(wav.file = NULL,
   }
 
   if (check == TRUE) {
-    TD <- suppressWarnings(bioacoustics::threshold_detection(
+    TD <- suppressWarnings(suppressMessages(bioacoustics::threshold_detection(
       wave = wav.file,
       threshold = threshold,
       min_dur = min_dur,
@@ -73,7 +73,7 @@ find_events <- function(wav.file = NULL,
       metadata = FALSE,
       spectro_dir = NULL,
       time_scale = 2,
-      ticks = TRUE))
+      ticks = TRUE)))
 
     if (!is.null(TD$data)) {
       ## write audacity marks based on events: times in seconds
