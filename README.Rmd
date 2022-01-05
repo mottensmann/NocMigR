@@ -158,16 +158,22 @@ audio <- tuneR::readWave("example/20211220_064253.wav",
 bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
 ```
 
-Output reviewed in `Audacity` (note that events were grouped to one).
-
-
 ```{r, echo=FALSE, fig.align='center', dpi=300, out.width = "900px",  fig.cap="Screenshot: Audacity refined label"}
 knitr::include_graphics("inst/extdata/screenshot_2.PNG")
 ```
 
-### 5.) `batch_process`: Execute several algorithms in batch mode 
+### 5.) `merge_events`: Pool all detected events
 
-Run all above steps in one go and for all files within a folder
+Takes the output of the previous operation and concatenates audio signals as well as labels into files called `merged.events.wav` and `merged.events.txt` respectively. This option comes handy if there are many input files in the working directory. 
+
+```{r}
+merge_events(path = "example")
+```
+
+
+## `batch_process`: Entire workflow combined in a single function call 
+
+Process all files within a directory and run the steps shown above
 
 ```{r}
 batch_process(
@@ -182,6 +188,17 @@ batch_process(
                       HPF = 1000),
   rename = FALSE)
 ```
+```{r, echo=FALSE, results='asis'}
+my_data <- data.frame(
+  Recording = c("60 hours", "7.5 hours"),
+  `Sample rate`= "96000 Hz",
+  Downsampled = "441000 Hz",
+  Channels = "Mono",
+  `Run time` = c("1.76 hours", "14.52 minutes" )
+)
+
+pander::pandoc.table(my_data, style="rmarkdown", "Run times, notebook ~ Intel i5-4210M, 2 cores ~ 8 GB RAM")
+```
 
 ___
 
@@ -189,4 +206,6 @@ ___
 ## clean-up 
 unlink("example", recursive = TRUE)
 ```
+
+
 

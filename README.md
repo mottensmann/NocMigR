@@ -84,7 +84,7 @@ analysing audio files (e.g, default of
 [AudioMoth](https://www.openacousticdevices.info/)). Some (most?) of the
 popular field recorders (e.g., Olympus LS, Tascam DR or Sony PCM) use
 different, rather uninformative naming schemes (date and number at
-best), but the relevant information to construct a proper date\_time
+best), but the relevant information to construct a proper date_time
 string is embedded in the meta data of the recording (accessible using
 `file.info()`, but requires correct settings of the internal clock!).
 For instance, long recording sessions using an Olympus LS-3 will create
@@ -98,9 +98,9 @@ here.
 ## only simulate output as file is already labelled
 rename_recording(path = "example", format = "wav", recorder = "Sony PCM-D100", simulate = T)
 #>                                        old.name  seconds                time
-#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-01-05 00:38:42
+#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-01-05 21:32:37
 #>                                        new.name
-#> example/20211220_064253.wav 20220105_003842.wav
+#> example/20211220_064253.wav 20220105_213237.wav
 ```
 
 ### 2.) `split_wave`: Divide long recordings
@@ -175,14 +175,7 @@ bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
 In addition to the output shown above, a file with labels for reviewing
 events in `Audacity` is created (wrapping `seewave::write.audacity()`).
 
-<div class="figure" style="text-align: center">
-
-<img src="inst/extdata/screenshot_1.PNG" alt="Screenshot: Audacity raw labels" width="900px" />
-<p class="caption">
-Screenshot: Audacity raw labels
-</p>
-
-</div>
+<img src="inst/extdata/screenshot_1.PNG" title="Screenshot: Audacity raw labels" alt="Screenshot: Audacity raw labels" width="900px" style="display: block; margin: auto;" />
 
 ### 4.) `extract_events`: Subset original recording file
 
@@ -194,7 +187,7 @@ frequency is within the frequency band defined by `HPF:LPF`)
 
 ``` r
 ## extract events based on object TD
-df <- extract_events(threshold_detection = TD, path = "example", format = "wav", 
+df <- extract_events(threshold_detection = TD, path = "example", format = "wav",
     LPF = 4000, HPF = 1000, buffer = 1)
 #> 6 selections overlapped
 ```
@@ -203,27 +196,29 @@ Display refined events …
 
 ``` r
 ## display spectrogram based on first six events
-audio <- tuneR::readWave("example/20211220_064253.wav", from = df$from, to = df$to, 
+audio <- tuneR::readWave("example/20211220_064253.wav", from = df$from, to = df$to,
     units = "seconds")
 bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
 ```
 
 <img src="inst/README-unnamed-chunk-11-1.png" style="display: block; margin: auto;" />
 
-Output reviewed in `Audacity` (note that events were grouped to one).
+<img src="inst/extdata/screenshot_2.PNG" title="Screenshot: Audacity refined label" alt="Screenshot: Audacity refined label" width="900px" style="display: block; margin: auto;" />
 
-<div class="figure" style="text-align: center">
+### 5.) `merge_events`: Pool all detected events
 
-<img src="inst/extdata/screenshot_2.PNG" alt="Screenshot: Audacity refined label" width="900px" />
-<p class="caption">
-Screenshot: Audacity refined label
-</p>
+Takes the output of the previous operation and concatenates audio
+signals as well as labels into files called `merged.events.wav` and
+`merged.events.txt` respectively. This option comes handy if there are
+many input files in the working directory.
 
-</div>
+``` r
+merge_events(path = "example")
+```
 
-### 5.) `batch_process`: Execute several algorithms in batch mode
+## `batch_process`: Entire workflow combined in a single function call
 
-Run all above steps in one go and for all files within a folder
+Process all files within a directory and run the steps shown above
 
 ``` r
 batch_process(
@@ -237,20 +232,26 @@ batch_process(
                       LPF = 5000, # low-pass filter at 500 Hz
                       HPF = 1000),
   rename = FALSE)
-#> Start processing:     2022-01-05 00:39:10 
-#> 
-#> Search for events using template ... done
+#> Start processing:     2022-01-05 21:32:58     [Input audio of 5 minutes @ 44100 Hz ]
+#> Search for events using template ...
+#> done
 #> Extract events ... 
 #> 8 selections overlapped
-#> done
-#> Finished processing:  2022-01-05 00:39:13 
-#>  Run time:    3.12 seconds
+#> done In total 2 events detected
 #> Merge events and write audio example/merged_events.WAV
-#> In total 2 events detected
+#> Finished processing:  2022-01-05 21:33:01 
+#>  Run time:    2.69 seconds
 #>              filename    from        to       starting_time   event
 #> 1 20211220_064253.wav  45.576  50.38133 2021-12-20 06:43:39  46.576
 #> 2 20211220_064253.wav 152.434 156.35420 2021-12-20 06:45:26 153.434
 ```
+
+| Recording | Sample.rate | Downsampled | Channels |   Run.time    |
+|:---------:|:-----------:|:-----------:|:--------:|:-------------:|
+| 60 hours  |  96000 Hz   |  441000 Hz  |   Mono   |  1.76 hours   |
+| 7.5 hours |  96000 Hz   |  441000 Hz  |   Mono   | 14.52 minutes |
+
+Run times, notebook \~ Intel i5-4210M, 2 cores \~ 8 GB RAM
 
 ------------------------------------------------------------------------
 
