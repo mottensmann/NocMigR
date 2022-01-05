@@ -83,7 +83,7 @@ non_overlapping <- function(df) {
                            end = df$to,
                            bottom.freq = NA,
                            top.freq = NA)
-  out <- warbleR::overlapping_sels(df.warbler)
+  out <- suppressMessages(warbleR::overlapping_sels(df.warbler))
   ## any overlap?
   if (any(!is.na(out$ovlp.sels))) {
     df.new <- do.call("rbind", lapply(stats::na.omit(unique(out$ovlp.sels)), function(x) {

@@ -5,7 +5,9 @@
 #'
 total_duration <- function(path, format) {
   waves <- list.files(path = path, pattern = format, full.names = T)
-  waves <- waves[!stringr::str_detect(waves, "extracted.wav")]
+  waves <- waves[!stringr::str_detect(waves, "_extracted.wav")]
+  waves <- waves[!stringr::str_detect(waves, "merged.events.wav")]
+
   duration <- sapply(waves, tuneR::readWave, header = T)
 
   duration <- sum(sapply(waves, function(i) {
