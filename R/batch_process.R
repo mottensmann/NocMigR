@@ -27,7 +27,7 @@
 #'
 #' @param path Path to a set of recordings (all same format and continuous time span). Important note: File are expected to be named using a YYYYMMDD_HHMMSS string or set \code{reaname = TRUE} to allow renaming. Files including the extensions "_extracted.WAV" or "merged_events.WAV" are reserved to write output files and ignored as inputs.
 #'
-#' @param format Format of sound files (default WAV).
+#' @param format Format of sound files (default and suggested is to use WAV).
 #'
 #' @param steps Numeric or character vector, by default steps 1:5 are executed. (1 = \code{\link{rename_recording}}, 2 = \code{\link{split_wave}}, 3 = \code{\link{find_events}}, 4 = \code{\link{join_audacity}} & 5 = \code{\link{extract_events}}).
 #' @param rename Logical, allows to rename recordings (default FALSE).
@@ -61,10 +61,20 @@ batch_process <- function(
   time = c("ctime", "mtime"),
   .onsplit = TRUE) {
 
-  ## Stop the time ...
+  ## Print start time and info
   ## ---------------------------------------------------------------------------
   t_start <- Sys.time()
-  cat("Start processing:\t", as.character(t_start),"\n")
+
+  if (format %in% c("WAV", "wav")) {
+    ## get total duration and sampling frequency of the data to process
+    audio_summary <- total_duration(path, format)
+    cat("Start processing:\t", as.character(t_start),"\t", "[Input audio of",
+        audio_summary$duration, "@", audio_summary$sample_rate, "]\n")
+  } else {
+    cat("Start processing:\t", as.character(t_start),"\n")
+  }
+
+
 
   ## get function arguments
   format <- match.arg(format)
@@ -90,10 +100,14 @@ batch_process <- function(
 
   }
 
+  ## define a flag to interrupt processing if no events are found
+  ## Will be updated if find_events fails
+  ## ---------------------------------------------------------------------------
+  stop_processing <- FALSE
 
   ## 1.) Rename if not AudioMoth
   ## ---------------------------------------------------------------------------
-  if (recorder != "AudioMoth" & "1" %in% steps & rename == TRUE) {
+  if ("1" %in% steps & rename == TRUE) {
     cat("Rename recodings ... \t")
     rename_recording(path = path, recorder = recorder, format = format, time = time)
     cat("done\n")
@@ -102,6 +116,7 @@ batch_process <- function(
   ## 2.) Split
   ## ---------------------------------------------------------------------------
   if ("2" %in% steps & !is.null(segment)) {
+    if (format %in% c("MP3", "mp3")) stop("only wav supported. convert data!\n")
     cat("Split recordings ... \t")
     wavs <- list.files(path = path, pattern = format)
     ## avoid files of previous run!
@@ -120,7 +135,7 @@ batch_process <- function(
   ## 3.) Perform event detection
   ## ---------------------------------------------------------------------------
   if ("3" %in% steps) {
-    cat("\nSearch for events using template ...\t")
+    cat("Search for events using template ...\n")
 
     ## check if asked to perform task on segments instead of full file
     if (.onsplit == FALSE & !is.null(segment)) .onsplit <- TRUE
@@ -149,51 +164,66 @@ batch_process <- function(
     }
 
     cat("done\n")
-  }
-  ## 4.) Join audacity marks
-  ## ---------------------------------------------------------------------------
-  if ("4" %in% steps & dir.exists(file.path(path, "split"))) {
-    ## get all of the original wav files
-    wavs <- list.files(path = path, full.names = F, pattern = format)
-    ## avoid files of previous run!
-    wavs <- wavs[!stringr::str_detect(wavs, "_extracted.WAV")]
-    wavs <- wavs[!stringr::str_detect(wavs, "merged_events.WAV")]
-
-    ## ignore files that do not match the date_time string
-    wavs <- has_date_time_name(wavs)
-    cat("Join audacity marks ...\t")
-    ## load marks of the segmented files
-    x <-lapply(wavs, join_audacity,
-               target.path = path,
-               split.path = file.path(path, "split"))
-    cat("done\n")
+    ## Check  for option of no events found, print warning and stop
+    if (length(TD) == 0) {
+      cat("No events found!\n")
+      stop_processing <- TRUE
+    }
   }
 
-  ## 5.) extract events based on audacity marks
-  ## ---------------------------------------------------------------------------
-  if ("5" %in% steps) {
-    audacity <- list.files(path = path, full.names = T, pattern = "txt")
-    ## kick out _extracted.txt if present
-    audacity <- audacity[!stringr::str_detect(audacity, "_extracted.txt")]
-    audacity <- audacity[!stringr::str_detect(audacity, "merged_events.txt")]
 
-    ## summarise number of events to check if realistic ...
-    labels <- lapply(audacity, seewave::read.audacity)
-    length <- sapply(labels, nrow)
+  if (stop_processing == FALSE) {
 
-    if (any(length) > max.events) warning("\nAt least one audio file has more than",  max.events,  "events and will be skipped\n")
+    ## 4.) Join audacity marks
+    ## ---------------------------------------------------------------------------
+    if ("4" %in% steps & dir.exists(file.path(path, "split"))) {
+      ## get all of the original wav files
+      wavs <- list.files(path = path, full.names = F, pattern = format)
+      ## avoid files of previous run!
+      wavs <- wavs[!stringr::str_detect(wavs, "_extracted.WAV")]
+      wavs <- wavs[!stringr::str_detect(wavs, "merged_events.WAV")]
 
-    audacity <- audacity[length <= max.events]
+      ## ignore files that do not match the date_time string
+      wavs <- has_date_time_name(wavs)
+      cat("Join audacity marks ...\t")
+      ## load marks of the segmented files
+      x <-lapply(wavs, join_audacity,
+                 target.path = path,
+                 split.path = file.path(path, "split"))
+      cat("done\n")
+    }
 
-    cat("Extract events ... \n")
-    output <- lapply(audacity, extract_events,
-                     buffer = buffer,
-                     format = format,
-                     path = path,
-                     HPF = target$HPF,
-                     LPF = target$LPF)
-    output <- do.call("rbind", output)
-    cat("\ndone\n")
+    ## 5.) extract events based on audacity marks
+    ## ---------------------------------------------------------------------------
+    if ("5" %in% steps) {
+      audacity <- list.files(path = path, full.names = T, pattern = "txt")
+      ## kick out _extracted.txt if present
+      audacity <- audacity[!stringr::str_detect(audacity, "_extracted.txt")]
+      audacity <- audacity[!stringr::str_detect(audacity, "merged_events.txt")]
+
+      ## summarise number of events to check if realistic ...
+      labels <- lapply(audacity, seewave::read.audacity)
+      length <- sapply(labels, nrow)
+
+      if (any(length) > max.events) warning("\nAt least one audio file has more than",  max.events,  "events and will be skipped\n")
+
+      audacity <- audacity[length <= max.events]
+
+      cat("Extract events ... \n")
+      output <- lapply(audacity, extract_events,
+                       buffer = buffer,
+                       format = format,
+                       path = path,
+                       HPF = target$HPF,
+                       LPF = target$LPF)
+      output <- do.call("rbind", output)
+      cat("\ndone\tIn total", nrow(output), "events detected\n")
+    }
+
+    if ("6" %in% steps) {
+      cat("Merge events and write audio", file.path(path, "merged_events.WAV\n"))
+      merge_events(path = path)
+    }
   }
 
   t_finish <- Sys.time()
@@ -212,13 +242,6 @@ batch_process <- function(
   } else {
     cat("\tRun time:\t", round(took$hours, 2), "hours\n")
   }
-
-  if ("6" %in% steps) {
-    cat("Merge events and write audio", file.path(path, "merged_events.WAV\n"))
-    merge_events(path = path)
-  }
-
-  if ("5" %in% steps) cat("In total", nrow(output), "events detected")
 
   if (exists("output")) return(output)
 }

@@ -24,7 +24,7 @@ batch_process(
 \arguments{
 \item{path}{Path to a set of recordings (all same format and continuous time span). Important note: File are expected to be named using a YYYYMMDD_HHMMSS string or set \code{reaname = TRUE} to allow renaming. Files including the extensions "_extracted.WAV" or "merged_events.WAV" are reserved to write output files and ignored as inputs.}
 
-\item{format}{Format of sound files (default WAV).}
+\item{format}{Format of sound files (default and suggested is to use WAV).}
 
 \item{steps}{Numeric or character vector, by default steps 1:5 are executed. (1 = \code{\link{rename_recording}}, 2 = \code{\link{split_wave}}, 3 = \code{\link{find_events}}, 4 = \code{\link{join_audacity}} & 5 = \code{\link{extract_events}}).}
 
