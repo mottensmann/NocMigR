@@ -13,7 +13,8 @@
 #' @export
 #'
 split_wave <- function(path = NULL, file = NULL, segment = 600,
-                       downsample = NULL, format = c("WAV", "wav"), mono = TRUE) {
+                       downsample = NULL, format = c("WAV", "wav"),
+                       mono = TRUE) {
 
   format <- match.arg(format)
   ## define file name
@@ -61,9 +62,12 @@ split_wave <- function(path = NULL, file = NULL, segment = 600,
                    seconds = diff(breaks))
 
   ## adjust times for date_time label as header
-  for (i in 2:nrow(df)) {
-    df[i, "ctime"] <- df[i - 1, "ctime"] + df[i - 1, "seconds"]
+  if (nrow(df) > 1) {
+    for (i in 2:nrow(df)) {
+      df[i, "ctime"] <- df[i - 1, "ctime"] + df[i - 1, "seconds"]
+    }
   }
+
 
   ## create file names based on ctime of recordings
   df[["new.name"]] <- paste0(substr(df[["ctime"]], 1, 4),
