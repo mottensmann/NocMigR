@@ -17,7 +17,7 @@ merge_events <- function(path) {
 
   ## write to file
   ## check file is not too big ...
-  size <- format(object.size(audio), units = "GB")
+  size <- format(utils::object.size(audio), units = "GB")
   if (as.numeric(substr(size, 1, (nchar(size) - 3))) >= 1) {
     cat("Try to write merged_events.WAV, file size is ", size, "and might fail\n")
     error_messages <- try(tuneR::writeWave(audio, file.path(path, "merged_events.WAV")))
