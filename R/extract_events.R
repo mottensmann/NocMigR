@@ -78,6 +78,7 @@ extract_events <- function(threshold_detection,
   df <- df[order(df$from),]
 
   ## check max amplitude frequency is within desired frequency band
+  ## if none remain, skip!
   ## ---------------------------------------------------------------------------
   if (!is.null(LPF) & !is.null(HPF)) {
     ## (binding global variable to please R CMD check)
@@ -85,45 +86,49 @@ extract_events <- function(threshold_detection,
     df <- dplyr::filter(df, freq_max_amp < LPF, freq_max_amp > HPF)
   }
 
-  ## Check if overlaps can be eliminated
-  ## ----------------------------------------------------------------------------
-  df <- non_overlapping(df)
+  if (nrow(df) > 0) {
+    ## Check if overlaps can be eliminated
+    ## ----------------------------------------------------------------------------
+    df <- non_overlapping(df)
 
-  ## extract audio --> CHECK OVERLAPPING ISSUES IF ANY
-  audio <- lapply(1:nrow(df), function(i) {
-    tuneR::readWave(file, df[i, "from"], df[i, "to"], "seconds")
-  })
+    ## extract audio --> CHECK OVERLAPPING ISSUES IF ANY
+    audio <- lapply(1:nrow(df), function(i) {
+      tuneR::readWave(file, df[i, "from"], df[i, "to"], "seconds")
+    })
 
-  ## clean-up
-  if(clean_wav == TRUE) unlink(file)
+    ## clean-up
+    if(clean_wav == TRUE) unlink(file)
 
-  ## concatenate sound
-  audio <- do.call("bind", audio)
-  tuneR::writeWave(audio,
-                   stringr::str_replace(file, paste0(".", ext, collapse = ""), "_extracted.WAV"))
+    ## concatenate sound
+    audio <- do.call("bind", audio)
+    tuneR::writeWave(audio,
+                     stringr::str_replace(file, paste0(".", ext, collapse = ""), "_extracted.WAV"))
 
-  ## write labels for use in Audacity
-  ## adjust times for extracted audio file
-  ## -------------------------------------
-  df.adj <- df
+    ## write labels for use in Audacity
+    ## adjust times for extracted audio file
+    ## -------------------------------------
+    df.adj <- df
 
-  ## set first from = 0 and to = to - from
-  ## -------------------------------------
-  df.adj$to[1] <- df.adj$to[1] - df.adj$from[1]
-  df.adj$from[1] <- 0
+    ## set first from = 0 and to = to - from
+    ## -------------------------------------
+    df.adj$to[1] <- df.adj$to[1] - df.adj$from[1]
+    df.adj$from[1] <- 0
 
-  ## now adjust all others ...
-  ## -------------------------------------
-  if (nrow(df.adj) > 1) {
-    for (i in 2:nrow(df.adj)) {
-      df.adj$to[i] <- df.adj$to[i] - df.adj$from[i] + df.adj$to[i - 1]
-      df.adj$from[i] <- df.adj$to[i - 1]
+    ## now adjust all others ...
+    ## -------------------------------------
+    if (nrow(df.adj) > 1) {
+      for (i in 2:nrow(df.adj)) {
+        df.adj$to[i] <- df.adj$to[i] - df.adj$from[i] + df.adj$to[i - 1]
+        df.adj$from[i] <- df.adj$to[i - 1]
+      }
+
     }
+    dff <- data.frame(label = df.adj$starting_time, t1 = df.adj$from, t2 = df.adj$to)
+    seewave::write.audacity(
+      dff,
+      filename = stringr::str_replace(file, paste0(".", ext, collapse = ""), "_extracted.txt"))
 
   }
-  dff <- data.frame(label = df.adj$starting_time, t1 = df.adj$from, t2 = df.adj$to)
-  seewave::write.audacity(
-    dff,
-    filename = stringr::str_replace(file, paste0(".", ext, collapse = ""), "_extracted.txt"))
+
   return(df)
 }
