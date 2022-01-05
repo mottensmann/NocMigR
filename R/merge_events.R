@@ -16,7 +16,15 @@ merge_events <- function(path) {
   }
 
   ## write to file
-  tuneR::writeWave(audio, file.path(path, "merged_events.WAV"))
+  ## check file is not too big ...
+  size <- format(object.size(audio), units = "GB")
+  if (as.numeric(substr(size, 1, (nchar(size) - 3))) >= 1) {
+    cat("Try to write merged_events.WAV, file size is ", size, "and might fail\n")
+    error_messages <- try(tuneR::writeWave(audio, file.path(path, "merged_events.WAV")))
+    if (is.character(error_messages[1])) cat("Try rerun merge_events after restart!\n")
+  } else {
+    tuneR::writeWave(audio, file.path(path, "merged_events.WAV"))
+  }
 
   ## get audacity labels
   labels <- list.files(path, "extracted.txt", full.names = T)
@@ -43,5 +51,6 @@ merge_events <- function(path) {
   ## export labels
   seewave::write.audacity(audacity[,c("label", "t1", "t2")],
                           file.path(path, "merged_events.txt"))
-
+  ## try to free memory
+  x <- gc(verbose = FALSE); rm(x)
 }
