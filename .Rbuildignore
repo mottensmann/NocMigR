@@ -1,6 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-internal
+xeno-canto/
 debugger.R
 NocMigApp
 README.Rmd

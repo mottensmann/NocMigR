@@ -5,7 +5,7 @@
 \title{target-specific templates for use of automatised signal detection}
 \usage{
 td_presets(
-  target = c("Bubo bubo", "Strix aluco", "Glaucidium passerinum", "NocMig", "Shot")
+  target = c("Bubo bubo", "Strix aluco", "Glaucidium passerinum", "NocMig")
 )
 }
 \arguments{
@@ -30,7 +30,5 @@ td_presets("Glaucidium passerinum")
 ## NocMig setting
 td_presets("NocMig")
 
-## Gunfire ...
-td_presets("Shot")
 
 }

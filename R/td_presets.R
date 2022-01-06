@@ -17,12 +17,10 @@
 #' ## NocMig setting
 #' td_presets("NocMig")
 #'
-#' ## Gunfire ...
-#' td_presets("Shot")
 #'
 #' @export
 #'
-td_presets <- function(target = c("Bubo bubo", "Strix aluco", "Glaucidium passerinum", "NocMig", "Shot")) {
+td_presets <- function(target = c("Bubo bubo", "Strix aluco", "Glaucidium passerinum", "NocMig")) {
   target <- match.arg(target)
 
   if (target == "Bubo bubo") {
@@ -65,21 +63,21 @@ td_presets <- function(target = c("Bubo bubo", "Strix aluco", "Glaucidium passer
     df <- data.frame(
       HPF = 2000,
       LPF = 10000,
-      min_dur = 200,
-      max_dur = 300
+      min_dur = 10,
+      max_dur = 400
     )
   }
 
-  if (target == "Shot") {
-    ## duration: median = 260 ms, 90% conf 224 - 289
-    ## max amp freq: 512
-
-    df <- data.frame(
-      HPF = 0,
-      LPF = 1000,
-      min_dur = 30,
-      max_dur = 600
-    )
-  }
+  # if (target == "Shot") {
+  #   ## duration: median = 260 ms, 90% conf 224 - 289
+  #   ## max amp freq: 512
+  #
+  #   df <- data.frame(
+  #     HPF = 0,
+  #     LPF = 1000,
+  #     min_dur = 30,
+  #     max_dur = 600
+  #   )
+  # }
   return(df)
 }

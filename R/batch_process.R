@@ -163,7 +163,7 @@ batch_process <- function(
                                  LPF = target$LPF)})
     }
     ## check if number of events is zero
-    TD_data <- do.call("rbind", lapply(TD, function(x) x$data$events_data))
+    TD_data <- do.call("rbind", lapply(TD, function(x) x$data$event_data))
     cat("done\n")
     ## Check  for option of no events found, print warning and stop
     if (length(TD_data) == 0) {
@@ -225,7 +225,7 @@ batch_process <- function(
                        LPF = target$LPF)
       output_length <- length(output)
       output <- do.call("rbind", output)
-      cat("\ndone\tIn total", output_length, "events detected\n")
+      cat("\nIn total", output_length, "events detected\n")
     }
 
     if ("6" %in% steps) {
