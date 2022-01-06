@@ -162,10 +162,11 @@ batch_process <- function(
                                  HPF = target$HPF,
                                  LPF = target$LPF)})
     }
-
+    ## check if number of events is zero
+    TD_data <- do.call("rbind", lapply(TD, function(x) x$data$events_data))
     cat("done\n")
     ## Check  for option of no events found, print warning and stop
-    if (length(TD) == 0) {
+    if (length(TD_data) == 0) {
       cat("No events found!\n")
       stop_processing <- TRUE
     }
@@ -201,8 +202,14 @@ batch_process <- function(
       audacity <- audacity[!stringr::str_detect(audacity, "_extracted.txt")]
       audacity <- audacity[!stringr::str_detect(audacity, "merged_events.txt")]
 
-      ## summarise number of events to check if realistic ...
+
+      ## Read audacity marks
       labels <- lapply(audacity, seewave::read.audacity)
+      ## Prompt error if none found
+      if (length(labels) == 0) stop("\nNo audacity files in", path, " detected!\n")
+
+
+      ## summarise number of events to check if realistic ...
       length <- sapply(labels, nrow)
 
       if (any(length) > max.events) warning("\nAt least one audio file has more than",  max.events,  "events and will be skipped\n")
@@ -216,8 +223,9 @@ batch_process <- function(
                        path = path,
                        HPF = target$HPF,
                        LPF = target$LPF)
+      output_length <- length(output)
       output <- do.call("rbind", output)
-      cat("\ndone\tIn total", nrow(output), "events detected\n")
+      cat("\ndone\tIn total", output_length, "events detected\n")
     }
 
     if ("6" %in% steps) {

@@ -26,6 +26,8 @@ join_audacity <- function(target, target.path, split.path) {
 
   ## read all audacity marks
   audacity <- list.files(split.path, full.names = F, pattern = "txt")
+  ## Prompt error if empty vector (i.e., no events to join)
+  if (length(audacity) == 0) stop("\nNo audacity files in ", split.path, " detected!\n")
 
   ## select the ones that are within the time period covered by the parent file
   wanted <- stringr::str_replace(childs$file, "WAV", "txt")

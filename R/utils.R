@@ -62,6 +62,7 @@ update_events <- function(txt = NULL) {
     origin <- lubridate::make_datetime(2000, 01, 01, 0, 0, 0)
   }
 
+  ##
   data.frame(filename = df$file,
              starting_time = origin + df$t1,
              duration = df$t2 - df$t1,
