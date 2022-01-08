@@ -9,6 +9,9 @@ extract_events(
   buffer = 1,
   format = c("WAV", "wav", "mp3", "MP3"),
   path,
+  downsample = NULL,
+  mono = TRUE,
+  rescale = NULL,
   LPF = NULL,
   HPF = NULL
 )
@@ -22,6 +25,12 @@ extract_events(
 
 \item{path}{where to look up the sound file}
 
+\item{downsample}{Null or re-sampling factor used in \code{\link{split_wave}} (default NULL).}
+
+\item{mono}{Logical. By default, \code{\link{split_wave}} coerces stereo files to mono prior to event detection (default TRUE). If kept as stereo file the left channel will used in \code{\link{find_events}}.}
+
+\item{rescale}{optional. allows to resacale the wav to a new bit rate (e.g., "8", "16", "24").}
+
 \item{LPF}{integer. Low-Pass Filter (Hz). Frequencies above the cutoff are greatly attenuated.
 Default is set internally at the Nyquist frequency of the recording.}
 
@@ -32,5 +41,5 @@ Default setting is 16000 Hz. A default of 1000 Hz is recommended for most bird v
 data frame
 }
 \description{
-Extract detected events and writes them to a sound file
+Uses audacity marks, either obtained from text file created with seewave::write.audacity or an object of class \code{threshold_detection} to extract audio events from the original sound file. Optional arguments allow to resample and coerce stereo to mono before writing wav to file.
 }

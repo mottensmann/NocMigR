@@ -1,11 +1,14 @@
 #' Extract detected events and writes them to a sound file
 #'
+#' @description Uses audacity marks, either obtained from text file created with seewave::write.audacity or an object of class \code{threshold_detection} to extract audio events from the original sound file. Optional arguments allow to resample and coerce stereo to mono before writing wav to file.
+#'
 #' @param threshold_detection either class threshold_detection or path to audacity marks
 #' @param buffer Buffer in seconds added to before and after the event (default 1). Controls also the detection of overlapping events.
 #' @param path where to look up the sound file
 #' @return data frame
 #' @inheritParams rename_recording
 #' @inheritParams batch_process
+#' @inheritParams split_wave
 #' @inheritParams bioacoustics::threshold_detection
 #' @importFrom tuneR bind
 #' @export
@@ -14,9 +17,18 @@ extract_events <- function(threshold_detection,
                            buffer = 1,
                            format = c("WAV", "wav", "mp3", "MP3"),
                            path,
-                           LPF = NULL, HPF = NULL) {
+                           downsample = NULL,
+                           mono = TRUE,
+                           rescale = NULL,
+                           LPF = NULL,
+                           HPF = NULL) {
 
   format <- match.arg(format)
+
+  ## check for existing output and drop a comment if found
+  ## ---------------------------------------------------------------------------
+  previous_output <- list.files(path, "_extracted.WAV")
+  if (length(previous_output)) cat("\nExisting files '_extracted.WAV will be overwritten!\n")
 
   ## get df of interest
   ## --------------------------------
@@ -93,7 +105,11 @@ extract_events <- function(threshold_detection,
 
     ## extract audio --> CHECK OVERLAPPING ISSUES IF ANY
     audio <- lapply(1:nrow(df), function(i) {
-      tuneR::readWave(file, df[i, "from"], df[i, "to"], "seconds")
+      ## read signal
+      x <- tuneR::readWave(file, df[i, "from"], df[i, "to"], "seconds")
+      if (!is.null(downsample)) x <- tuneR::downsample(x, downsample)
+      if (mono == TRUE & x@stereo == TRUE) x <- tuneR::mono(x, which = 'both')
+      return(x)
     })
 
     ## clean-up
