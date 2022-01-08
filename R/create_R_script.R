@@ -12,9 +12,9 @@ create_R_script <- function(path, open = TRUE) {
   df <- batch_process(path = "', path,'",
                       format = "WAV",
                       recorder = "AudioMoth",
-                      target = "Bubo bubo",
-                      SNR = 8,
-                      steps = 1:5,
+                      target = td_presets("NocMig"),
+                      SNR = 6,
+                      steps = 1:6,
                       max.events = 400)
       '))
   cat(paste0('cleanup_batch_process(path = "', path,'")'))
