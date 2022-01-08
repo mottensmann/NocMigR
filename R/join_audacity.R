@@ -18,10 +18,11 @@ join_audacity <- function(target, target.path, split.path) {
     "rbind",
     lapply(list.files(split.path, full.names = F, pattern = "WAV"), get_DateTime, target.path = split.path))
 
-  ## select child of parent
+  ## select child of parent based on start and end time, truncated to exclude
+  ## variatio beyond the second
   ## (binding global variables to please R CMD check)
   start <- end <- NULL
-  childs <- dplyr::filter(childs.info, start >= target.info$start, end <= target.info$end)
+  childs <- dplyr::filter(childs.info,  trunc.POSIXt(start) >= target.info$start, trunc.POSIXt(end) <= target.info$end)
   childs$order <- 1:nrow(childs)
 
   ## read all audacity marks
