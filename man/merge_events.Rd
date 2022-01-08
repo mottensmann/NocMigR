@@ -4,11 +4,13 @@
 \alias{merge_events}
 \title{Merge output}
 \usage{
-merge_events(path)
+merge_events(path, rescale = NULL)
 }
 \arguments{
 \item{path}{Path to a set of recordings (all same format and continuous time span). Important note: File are expected to be named using a YYYYMMDD_HHMMSS string or set \code{reaname = TRUE} to allow renaming. Files including the extensions "_extracted.WAV" or "merged_events.WAV" are reserved to write output files and ignored as inputs.}
+
+\item{rescale}{optional. allows to resacale the wav to a new bit rate (e.g., "8", "16", "24").}
 }
 \description{
-Merge output
+Loops through folder and merges files with extension "extracted.wav" into a new file 'merged.events.wav' (and the same with audacity labels). Optionally, rescales to a new bit rate (e.g., "8" or "16") to avoid memory issues. If file size is to large, automatically tries to downsample to 32 kHz.
 }
