@@ -4,7 +4,7 @@
 \alias{total_duration}
 \title{Compute entire recording length}
 \usage{
-total_duration(path, format)
+total_duration(path, format = "WAV")
 }
 \arguments{
 \item{path}{Path to a set of recordings (all same format and continuous time span). Important note: File are expected to be named using a YYYYMMDD_HHMMSS string or set \code{reaname = TRUE} to allow renaming. Files including the extensions "_extracted.WAV" or "merged_events.WAV" are reserved to write output files and ignored as inputs.}

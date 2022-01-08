@@ -3,10 +3,10 @@
 #' @inheritParams batch_process
 #' @keywords internal
 #'
-total_duration <- function(path, format) {
+total_duration <- function(path, format = "WAV") {
   waves <- list.files(path = path, pattern = format, full.names = T)
   waves <- waves[!stringr::str_detect(waves, paste0("_extracted.", format,""))]
-  waves <- waves[!stringr::str_detect(waves, "merged.events.wav")]
+  waves <- waves[!stringr::str_detect(waves, "merged.events.WAV")]
 
   duration <- sapply(waves, tuneR::readWave, header = T)
 
