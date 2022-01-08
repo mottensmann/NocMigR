@@ -9,22 +9,25 @@ split_wave(
   file = NULL,
   segment = 600,
   downsample = NULL,
-  format = c("WAV", "wav"),
-  mono = TRUE
+  mono = TRUE,
+  rescale = NULL,
+  format = c("WAV", "wav")
 )
 }
 \arguments{
-\item{path}{path}
+\item{path}{path.}
 
-\item{file}{file name}
+\item{file}{file name.}
 
-\item{segment}{segment length in seconds. Default 600}
+\item{segment}{segment length in seconds. Default 600.}
 
-\item{downsample}{optional}
+\item{downsample}{optional. allows to downsample to a new sampling rate in Hz.}
 
-\item{format}{file extension (currently only WAV is supported)}
+\item{mono}{logical. By default coerces to mono.}
 
-\item{mono}{logical. By default coerces to mono}
+\item{rescale}{optional. allows to resacale the wav to a new bit rate (e.g., "8", "16", "24").}
+
+\item{format}{file extension (currently only WAV is supported).}
 }
 \value{
 none

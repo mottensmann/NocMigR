@@ -3,18 +3,23 @@
 #' @description
 #' Cuts audio file into segments for processing and applies resampling and mono conversion if needed.
 #'
-#' @param path path
-#' @param file file name
-#' @param segment segment length in seconds. Default 600
-#' @param downsample optional
-#' @param format file extension (currently only WAV is supported)
-#' @param mono logical. By default coerces to mono
+#' @param path path.
+#' @param file file name.
+#' @param segment segment length in seconds. Default 600.
+#' @param downsample optional. allows to downsample to a new sampling rate in Hz.
+#' @param format file extension (currently only WAV is supported).
+#' @param mono logical. By default coerces to mono.
+#' @param rescale optional. allows to resacale the wav to a new bit rate (e.g., "8", "16", "24").
 #' @return none
 #' @export
 #'
-split_wave <- function(path = NULL, file = NULL, segment = 600,
-                       downsample = NULL, format = c("WAV", "wav"),
-                       mono = TRUE) {
+split_wave <- function(path = NULL,
+                       file = NULL,
+                       segment = 600,
+                       downsample = NULL,
+                       mono = TRUE,
+                       rescale = NULL,
+                       format = c("WAV", "wav")) {
 
   format <- match.arg(format)
   ## define file name
