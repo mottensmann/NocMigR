@@ -22,21 +22,30 @@ cleanup_batch_process <- function(path = NULL) {
   }
 
   ## check if extracted files were written
-  extracted <- list.files(path, pattern = "extracted")
-  extracted_path <- list.files(path, pattern = "extracted", full.names = T)
+  #extracted <- list.files(path, pattern = "_extracted.")
+  extracted_path <- list.files(path, pattern = "_extracted.", full.names = T)
 
-  if (length(extracted) > 0 ) {
+  if (length(extracted_path) > 0 ) {
     user_response <- readline(prompt = "Delete extracted files [y/n]?\n")
     if (user_response == "y") unlink(extracted_path)
   }
 
   # check if merged_events files were written
-  merged <- list.files(path, pattern = "merged.events")
-  extracted_path <- list.files(path, pattern = "merged.events", full.names = T)
+  #merged <- list.files(path, pattern = "merged.events")
+  merged_path <- list.files(path, pattern = "merged.events", full.names = T)
 
-  if (length(merged) > 0 ) {
+  if (length(merged_path) > 0 ) {
     user_response <- readline(prompt = "Delete merged.event files [y/n]?\n")
-    if (user_response == "y") unlink(extracted_path)
+    if (user_response == "y") unlink(merged_path)
   }
+
+  ## audacity text files
+  audacity <- list.files(path, pattern = ".txt", full.names = T)
+  if (length(audacity) > 0) {
+    user_response <- readline(prompt = "Delete audacity (.txt) files [y/n]?\n")
+    if (user_response == "y") unlink(audacity)
+
+  }
+
 
 }
