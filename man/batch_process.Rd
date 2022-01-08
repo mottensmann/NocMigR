@@ -12,6 +12,7 @@ batch_process(
   segment = NULL,
   mono = TRUE,
   downsample = NULL,
+  rescale = NULL,
   SNR = 8,
   buffer = 1,
   max.events = 999,
@@ -35,6 +36,8 @@ batch_process(
 \item{mono}{Logical. By default, \code{\link{split_wave}} coerces stereo files to mono prior to event detection (default TRUE). If kept as stereo file the left channel will used in \code{\link{find_events}}.}
 
 \item{downsample}{Null or re-sampling factor used in \code{\link{split_wave}} (default NULL).}
+
+\item{rescale}{optional. allows to resacale the wav to a new bit rate (e.g., "8", "16", "24").}
 
 \item{SNR}{Numeric value (dB)  specifying signal to noise ratio for \code{\link{find_events}} (default 8).}
 

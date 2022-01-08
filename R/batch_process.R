@@ -53,6 +53,7 @@ batch_process <- function(
   segment = NULL,
   mono = TRUE,
   downsample = NULL,
+  rescale = NULL,
   SNR = 8,
   buffer = 1,
   max.events = 999,
@@ -68,7 +69,7 @@ batch_process <- function(
   if (format %in% c("WAV", "wav")) {
     ## get total duration and sampling frequency of the data to process
     audio_summary <- total_duration(path, format)
-    cat("Start processing:\t", as.character(t_start),"\t", "[Input audio of",
+    cat("Start processing:\t", as.character(t_start),"\t", "[Input audio",
         audio_summary$duration, "@", audio_summary$sample_rate, "]\n")
   } else {
     cat("Start processing:\t", as.character(t_start),"\n")
@@ -135,7 +136,7 @@ batch_process <- function(
   ## 3.) Perform event detection
   ## ---------------------------------------------------------------------------
   if ("3" %in% steps) {
-    cat("Search for events using template ...\n")
+    cat("Search for events ...\n")
 
     ## check if asked to perform task on segments instead of full file
     if (.onsplit == FALSE & !is.null(segment)) .onsplit <- TRUE
@@ -222,7 +223,10 @@ batch_process <- function(
                        format = format,
                        path = path,
                        HPF = target$HPF,
-                       LPF = target$LPF)
+                       LPF = target$LPF,
+                       mono = mono,
+                       downsample = downsample,
+                       rescale = rescale)
       output_length <- length(output)
       output <- do.call("rbind", output)
       cat("\nIn total", output_length, "events detected\n")
