@@ -25,6 +25,25 @@ split_wave <- function(path = NULL,
   ## define file name
   wave_file <- file.path(path, file)
 
+  ## check python libraries are available
+  if (interactive()) {
+    ## try to load ...
+    check.pydub <- try(reticulate::import(module = "pydub", delay_load = TRUE))
+    if (class(check.pydub) == "try-error") {
+      stop("pydub is missing. Try to install with reticulate::py_install('pydub')\n")
+    }
+    ## try to load ...
+    check.audioop <- try(reticulate::import(module = "audioop", delay_load = TRUE))
+    if (class(check.audioop) == "try-error") {
+      stop("audioop is missing. Try to install with reticulate::py_install('audioop')\n")
+    }
+    ## try to load ...
+    check.wave <- try(reticulate::import(module = "wave", delay_load = TRUE))
+    if (class(check.audioop) == "try-error") {
+      stop("wave is missing. Try to install with reticulate::py_install('wave')\n")
+    }
+  }
+
   if (!is.null(downsample)) {
     ## down sample and save in temp folder
     temp.dir <- file.path(path, "temp")
