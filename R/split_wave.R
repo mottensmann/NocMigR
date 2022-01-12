@@ -29,17 +29,17 @@ split_wave <- function(path = NULL,
   if (interactive()) {
     ## try to load ...
     check.pydub <- try(reticulate::import(module = "pydub", delay_load = TRUE))
-    if (class(check.pydub) == "try-error") {
+    if (class(check.pydub)[1] == "try-error") {
       stop("pydub is missing. Try to install with reticulate::py_install('pydub')\n")
     }
     ## try to load ...
     check.audioop <- try(reticulate::import(module = "audioop", delay_load = TRUE))
-    if (class(check.audioop) == "try-error") {
+    if (class(check.audioop)[1] == "try-error") {
       stop("audioop is missing. Try to install with reticulate::py_install('audioop')\n")
     }
     ## try to load ...
     check.wave <- try(reticulate::import(module = "wave", delay_load = TRUE))
-    if (class(check.audioop) == "try-error") {
+    if (class(check.wave)[1] == "try-error") {
       stop("wave is missing. Try to install with reticulate::py_install('wave')\n")
     }
   }
