@@ -190,14 +190,24 @@ batch_process(
 ```
 ```{r, echo=FALSE, results='asis'}
 my_data <- data.frame(
-  Recording = c("60 hours", "7.5 hours"),
+  Recording = c("60 h", "60 h", "11.91", "10.6 h", "2.73"),
+  `Sample rate`= "96000 Hz",
+  Downsampled = "441000 Hz",
+  Channels = c("Mono", "Mono", "Stereo", "Mono", "Mono"),
+  `Run time` = c("2.02 h", "1.76 h", "1.39 h", "1.3 h", "4.88 min")
+)
+
+pander::pandoc.table(my_data, style="rmarkdown", "Run times all steps, notebook ~ Intel i5-4210M, 2 cores ~ 8 GB RAM")
+
+my_data <- data.frame(
+  Recording = c("7.5 h"),
   `Sample rate`= "96000 Hz",
   Downsampled = "441000 Hz",
   Channels = "Mono",
-  `Run time` = c("1.76 hours", "14.52 minutes" )
+  `Run time` = c("14.52 min" )
 )
 
-pander::pandoc.table(my_data, style="rmarkdown", "Run times, notebook ~ Intel i5-4210M, 2 cores ~ 8 GB RAM")
+pander::pandoc.table(my_data, style="rmarkdown", "Run times only event detection, notebook ~ Intel i5-4210M, 2 cores ~ 8 GB RAM")
 ```
 
 ___

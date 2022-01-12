@@ -36,14 +36,19 @@ td_presets <- function(target = c("Bubo bubo", "Strix aluco", "Glaucidium passer
   }
 
   if (target == "Strix aluco") {
-    ## duration: median = 260 ms, 90% conf 224 - 289
-    ## max amp freq: 512
+    ## Kiwitt-Calls:
+    ## ~ 100 - 150 ms
+    ## ~ frequency 2 - 3 kHz
+    ##
+    ## Hu-calls
+    ## ~ 200 - 300 ms
+    ## ~ frequency 700 - 1000 Hz
 
     df <- data.frame(
       HPF = 500,
-      LPF = 1200,
-      min_dur = 200,
-      max_dur = 300
+      LPF = 3500,
+      min_dur = 100,
+      max_dur = 1000
     )
   }
 

@@ -9,14 +9,16 @@ create_R_script <- function(path, open = TRUE) {
   sink(file = file.path(path, "R_code.R"), append = FALSE)
   cat('library(NocMigR)\n')
   cat(paste0('
-  df <- batch_process(path = "', path,'",
-                      format = "WAV",
-                      recorder = "AudioMoth",
-                      target = td_presets("NocMig"),
-                      SNR = 6,
-                      steps = 1:6,
-                      max.events = 400)
-      '))
+df <- batch_process(path = "', path,'",
+                    format = "WAV",
+                    recorder = "AudioMoth",
+                    target = td_presets("NocMig"),
+                    SNR = 6,
+                    downsample = 44100,
+                    mono = TRUE,
+                    steps = 1:6,
+                    max.events = 400)
+     '))
   cat(paste0('cleanup_batch_process(path = "', path,'")'))
   sink()
   if(open == TRUE) file.show(file.path(path, "R_code.R"))

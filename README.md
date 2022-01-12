@@ -98,9 +98,9 @@ here.
 ## only simulate output as file is already labelled
 rename_recording(path = "example", format = "wav", recorder = "Sony PCM-D100", simulate = T)
 #>                                        old.name  seconds                time
-#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-01-06 23:51:30
+#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-01-12 20:02:35
 #>                                        new.name
-#> example/20211220_064253.wav 20220106_235130.wav
+#> example/20211220_064253.wav 20220112_200235.wav
 ```
 
 ### 2.) `split_wave`: Divide long recordings
@@ -232,26 +232,40 @@ batch_process(
                       LPF = 5000, # low-pass filter at 500 Hz
                       HPF = 1000),
   rename = FALSE)
-#> Start processing:     2022-01-06 23:51:58     [Input audio of 5 minutes @ 44100 Hz ]
-#> Search for events using template ...
+#> Start processing:     2022-01-12 20:02:53     [Input audio 5 minutes @ 44100 Hz ]
+#> Search for events ...
 #> done
 #> Extract events ... 
+#> 
+#> Existing files '_extracted.WAV will be overwritten!
 #> 8 selections overlapped
 #> In total 1 events detected
 #> Merge events and write audio example/merged_events.WAV
-#> Finished processing:  2022-01-06 23:52:01 
-#>  Run time:    3.19 seconds
+#> 
+#> Existing files merged_events.WAV  will be overwritten!
+#> Finished processing:  2022-01-12 20:02:55 
+#>  Run time:    2.25 seconds
 #>              filename    from        to       starting_time   event
 #> 1 20211220_064253.wav  45.576  50.38133 2021-12-20 06:43:39  46.576
 #> 2 20211220_064253.wav 152.434 156.35420 2021-12-20 06:45:26 153.434
 ```
 
-| Recording | Sample.rate | Downsampled | Channels |   Run.time    |
-|:---------:|:-----------:|:-----------:|:--------:|:-------------:|
-| 60 hours  |  96000 Hz   |  441000 Hz  |   Mono   |  1.76 hours   |
-| 7.5 hours |  96000 Hz   |  441000 Hz  |   Mono   | 14.52 minutes |
+| Recording | Sample.rate | Downsampled | Channels | Run.time |
+|:---------:|:-----------:|:-----------:|:--------:|:--------:|
+|   60 h    |  96000 Hz   |  441000 Hz  |   Mono   |  2.02 h  |
+|   60 h    |  96000 Hz   |  441000 Hz  |   Mono   |  1.76 h  |
+|   11.91   |  96000 Hz   |  441000 Hz  |  Stereo  |  1.39 h  |
+|  10.6 h   |  96000 Hz   |  441000 Hz  |   Mono   |  1.3 h   |
+|   2.73    |  96000 Hz   |  441000 Hz  |   Mono   | 4.88 min |
 
-Run times, notebook \~ Intel i5-4210M, 2 cores \~ 8 GB RAM
+Run times all steps, notebook \~ Intel i5-4210M, 2 cores \~ 8 GB RAM
+
+| Recording | Sample.rate | Downsampled | Channels | Run.time  |
+|:---------:|:-----------:|:-----------:|:--------:|:---------:|
+|   7.5 h   |  96000 Hz   |  441000 Hz  |   Mono   | 14.52 min |
+
+Run times only event detection, notebook \~ Intel i5-4210M, 2 cores \~ 8
+GB RAM
 
 ------------------------------------------------------------------------
 
