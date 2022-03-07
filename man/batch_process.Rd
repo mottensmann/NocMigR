@@ -8,7 +8,7 @@ batch_process(
   path = NULL,
   format = c("WAV", "wav", "mp3", "MP3"),
   steps = 1:6,
-  rename = FALSE,
+  rename = TRUE,
   segment = NULL,
   mono = TRUE,
   downsample = NULL,

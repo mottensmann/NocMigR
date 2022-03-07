@@ -49,7 +49,7 @@ batch_process <- function(
   path = NULL,
   format = c("WAV", "wav", "mp3", "MP3"),
   steps = 1:6,
-  rename = FALSE,
+  rename = TRUE,
   segment = NULL,
   mono = TRUE,
   downsample = NULL,
@@ -189,7 +189,7 @@ batch_process <- function(
       wavs <- has_date_time_name(wavs)
       cat("Join audacity marks ...\t")
       ## load marks of the segmented files
-      x <-lapply(wavs, join_audacity,
+      x <- lapply(wavs, join_audacity,
                  target.path = path,
                  split.path = file.path(path, "split"))
       cat("done\n")
