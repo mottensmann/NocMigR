@@ -58,6 +58,7 @@ passerinum*).
 path <- system.file("extdata", "20211220_064253.mp3", package = "NocMigR")
 ## create temp folder
 dir.create("example")
+#> Warning in dir.create("example"): 'example' existiert bereits
 ## copy to test_folder
 file.copy(path, "example")
 ## convert to wav
@@ -96,11 +97,14 @@ here.
 
 ``` r
 ## only simulate output as file is already labelled
-rename_recording(path = "example", format = "wav", recorder = "Sony PCM-D100", simulate = T)
+rename_recording(path = "example",
+                 format = "wav",
+                 recorder = "Sony PCM-D100",
+                 simulate = T)
 #>                                        old.name  seconds                time
-#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-01-12 20:02:35
+#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-01-14 23:27:13
 #>                                        new.name
-#> example/20211220_064253.wav 20220112_200235.wav
+#> example/20211220_064253.wav 20220114_232713.wav
 ```
 
 ### 2.) `split_wave`: Divide long recordings
@@ -187,8 +191,12 @@ frequency is within the frequency band defined by `HPF:LPF`)
 
 ``` r
 ## extract events based on object TD
-df <- extract_events(threshold_detection = TD, path = "example", format = "wav",
-    LPF = 4000, HPF = 1000, buffer = 1)
+df <- extract_events(threshold_detection = TD, 
+                     path = "example",
+                     format = "wav",
+                     LPF = 4000,
+                     HPF = 1000,
+                     buffer = 1)
 #> 6 selections overlapped
 ```
 
@@ -196,8 +204,10 @@ Display refined events …
 
 ``` r
 ## display spectrogram based on first six events
-audio <- tuneR::readWave("example/20211220_064253.wav", from = df$from, to = df$to,
-    units = "seconds")
+audio <- tuneR::readWave("example/20211220_064253.wav", 
+                         from = df$from,
+                         to = df$to,
+                         units = "seconds")
 bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
 ```
 
@@ -232,7 +242,7 @@ batch_process(
                       LPF = 5000, # low-pass filter at 500 Hz
                       HPF = 1000),
   rename = FALSE)
-#> Start processing:     2022-01-12 20:02:53     [Input audio 5 minutes @ 44100 Hz ]
+#> Start processing:     2022-01-14 23:29:52     [Input audio 5 minutes @ 44100 Hz ]
 #> Search for events ...
 #> done
 #> Extract events ... 
@@ -243,8 +253,8 @@ batch_process(
 #> Merge events and write audio example/merged_events.WAV
 #> 
 #> Existing files merged_events.WAV  will be overwritten!
-#> Finished processing:  2022-01-12 20:02:55 
-#>  Run time:    2.25 seconds
+#> Finished processing:  2022-01-14 23:29:53 
+#>  Run time:    1.39 seconds
 #>              filename    from        to       starting_time   event
 #> 1 20211220_064253.wav  45.576  50.38133 2021-12-20 06:43:39  46.576
 #> 2 20211220_064253.wav 152.434 156.35420 2021-12-20 06:45:26 153.434
@@ -270,6 +280,6 @@ GB RAM
 ------------------------------------------------------------------------
 
 ``` r
-## clean-up
+## clean-up 
 unlink("example", recursive = TRUE)
 ```
