@@ -8,7 +8,7 @@ batch_process(
   path = NULL,
   format = c("WAV", "wav", "mp3", "MP3"),
   steps = 1:6,
-  rename = TRUE,
+  rename = FALSE,
   segment = NULL,
   mono = TRUE,
   downsample = NULL,
@@ -18,7 +18,7 @@ batch_process(
   max.events = 999,
   target = td_presets("Bubo bubo"),
   recorder = c("AudioMoth", "Olympus LS-3", "Sony PCM-D100"),
-  time = c("ctime", "mtime"),
+  time = c("mtime", "ctime"),
   .onsplit = TRUE
 )
 }
