@@ -63,10 +63,14 @@ rename_recording <- function(path = NULL,
       df <- data.frame(old.name = records,
                        seconds = seconds,
                        time = meta$mtime)
+      # Wed Mar 09 17:15:12 2022 ------------------------------
+      # repair a bug, check if correct now!
+      df$time <- df$time[nrow(df)] - df$seconds[nrow(df)]
+
       if (nrow(df) > 1) {
         ## compute times of recordings N-1 : 1
         for (i in (nrow(df) - 1):1) {
-          df[i, "time"] <- df[i + 1, "time"] - df[i + 1, "seconds"]
+          df[i, "time"] <- df[i + 1, "time"] - df[i, "seconds"]
         }
       }
 
