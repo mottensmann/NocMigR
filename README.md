@@ -58,7 +58,6 @@ passerinum*).
 path <- system.file("extdata", "20211220_064253.mp3", package = "NocMigR")
 ## create temp folder
 dir.create("example")
-#> Warning in dir.create("example"): 'example' existiert bereits
 ## copy to test_folder
 file.copy(path, "example")
 ## convert to wav
@@ -102,9 +101,9 @@ rename_recording(path = "example",
                  recorder = "Sony PCM-D100",
                  simulate = T)
 #>                                        old.name  seconds                time
-#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-01-14 23:27:13
+#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-03-17 13:55:17
 #>                                        new.name
-#> example/20211220_064253.wav 20220114_232713.wav
+#> example/20211220_064253.wav 20220317_135517.wav
 ```
 
 ### 2.) `split_wave`: Divide long recordings
@@ -242,7 +241,7 @@ batch_process(
                       LPF = 5000, # low-pass filter at 500 Hz
                       HPF = 1000),
   rename = FALSE)
-#> Start processing:     2022-01-14 23:29:52     [Input audio 5 minutes @ 44100 Hz ]
+#> Start processing:     2022-03-17 13:55:28     [Input audio 5 minutes @ 44100 Hz ]
 #> Search for events ...
 #> done
 #> Extract events ... 
@@ -253,8 +252,8 @@ batch_process(
 #> Merge events and write audio example/merged_events.WAV
 #> 
 #> Existing files merged_events.WAV  will be overwritten!
-#> Finished processing:  2022-01-14 23:29:53 
-#>  Run time:    1.39 seconds
+#> Finished processing:  2022-03-17 13:55:29 
+#>  Run time:    1.35 seconds
 #>              filename    from        to       starting_time   event
 #> 1 20211220_064253.wav  45.576  50.38133 2021-12-20 06:43:39  46.576
 #> 2 20211220_064253.wav 152.434 156.35420 2021-12-20 06:45:26 153.434
@@ -276,6 +275,21 @@ Run times all steps, notebook \~ Intel i5-4210M, 2 cores \~ 8 GB RAM
 
 Run times only event detection, notebook \~ Intel i5-4210M, 2 cores \~ 8
 GB RAM
+
+**Update:**
+
+With adequate computational power there is no need to split large wave
+files into segments of one hour. This way, the event detection process
+is much faster (steps 3:6), usually less than four minutes for an entire
+NocMig night!
+
+    #> 
+    #> 
+    #> | Recording | Sample.rate | Downsampled | Channels | Run.time  |
+    #> |:---------:|:-----------:|:-----------:|:--------:|:---------:|
+    #> | 114.99 h  |  48000 Hz   |  441000 Hz  |   Mono   | 26.79 min |
+    #> 
+    #> Table: 115h AudioMoth recording, notebook ~ AMD RYZEN 7, 16 cores ~ 24 GB RAM
 
 ------------------------------------------------------------------------
 

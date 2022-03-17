@@ -210,6 +210,23 @@ my_data <- data.frame(
 pander::pandoc.table(my_data, style="rmarkdown", "Run times only event detection, notebook ~ Intel i5-4210M, 2 cores ~ 8 GB RAM")
 ```
 
+**Update:**
+
+With adequate computational power there is no need to split large wave files into segments of one hour. This way, the event detection process is much faster (steps 3:6), usually less than four minutes for an entire NocMig night!
+
+```{r, eval=TRUE, echo=FALSE}
+my_data <- data.frame(
+  Recording = c("114.99 h"),
+  `Sample rate`= "48000 Hz",
+  Downsampled = "441000 Hz",
+  Channels = "Mono",
+  `Run time` = c("26.79 min" )
+)
+
+pander::pandoc.table(my_data, style="rmarkdown", "115h AudioMoth recording, notebook ~ AMD RYZEN 7, 16 cores ~ 24 GB RAM")
+```
+
+
 ___
 
 ```{r}
