@@ -116,9 +116,11 @@ NocMig_meta <- function(
   ## -----------------------------------------------------------------------------
   part1 <- paste0("Teilliste 1: ",
                   dusk_dawn$string, ", ", out1$icon, ", ", out1$temp, "°C", ", ",
+                  out2$wind_dir, ", ",
                   out1$wind_speed, " km/h")
   part2 <- paste0("Teilliste 2: ",
                   dusk_dawn$string, ", ", out2$icon, ", ", out2$temp, "°C", ", ",
+                  out2$wind_dir, ", ",
                   out2$wind_speed, " km/h")
   cat(part1,"\n")
   cat(part2)
