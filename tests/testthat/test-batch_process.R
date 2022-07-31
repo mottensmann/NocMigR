@@ -36,5 +36,5 @@ unlink(list.files(path, pattern = "WAV", full.names = T))
 unlink(list.files(path, pattern = "txt", full.names = T))
 
 test_that("Test batch on a single mp3 file", {
-  expect_equal(round(sum(check$event), 2), 200.01)
+  expect_equal(round(sum(check$event), 2), 393.05)
 })

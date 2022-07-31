@@ -20,5 +20,5 @@ unlink(list.files(stringr::str_remove(path, "20211220_064253.mp3")
 , pattern = "txt", full.names = T))
 
 test_that("extract events works", {
-  expect_equal(round(sum(df$event), 3), 216.06)
+  expect_equal(round(sum(df$event), 3), 311.881)
 })
