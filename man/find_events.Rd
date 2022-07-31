@@ -65,8 +65,8 @@ Default setting is 20 dB. 30 dB is recommended for extracting bird vocalizations
 \item{SNR_thr}{integer. SNR threshold (dB) at which the extraction of the audio event stops.
 Default setting is 10 dB. 8 dB is recommended for bird vocalizations.}
 
-\item{angle_thr}{integer. Angle threshold (Â°) at which the audio event extraction stops.
-Default setting is 40Â°. 125Â° is recommended for extracting bird vocalizations.}
+\item{angle_thr}{integer. Angle threshold (°) at which the audio event extraction stops.
+Default setting is 40°. 125° is recommended for extracting bird vocalizations.}
 
 \item{NWS}{integer. Length of the time window used for background noise estimation in the recording (ms).
 A longer window size is less sensitive to local variations in the background noise.
