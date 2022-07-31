@@ -7,6 +7,7 @@
 #' @param recorder Type of recorder
 #' @param time Either ctime or mtime
 #' @param simulate logical. If TRUE only shows data frame of names without touching files
+#' @param write_text logical, if TRUE exports a text file with information about file renaming
 #' @inheritParams batch_process
 #' @return data frame listing the modified file names
 #' @export
@@ -15,6 +16,7 @@ rename_recording <- function(path = NULL,
                              recorder = c("Olympus LS-3", "Sony PCM-D100"),
                              format = c("WAV", "wav", "mp3", "MP3"),
                              time = c("ctime", "mtime"),
+                             write_text = TRUE,
                              simulate = FALSE) {
   ## check function call
   recorder <- match.arg(recorder)
@@ -105,7 +107,7 @@ rename_recording <- function(path = NULL,
 
     file.rename(from = file.path(path, records),
                 to = file.path(path, df[["new.name"]]))
-    utils::write.table(df, file = file.path(path, "rename.audiomoth.info"))
+    if (isTRUE(write_text)) utils::write.table(df, file = file.path(path, "rename.audiomoth.info"))
   }
 
   return(df)

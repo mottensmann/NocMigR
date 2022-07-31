@@ -9,6 +9,7 @@ rename_recording(
   recorder = c("Olympus LS-3", "Sony PCM-D100"),
   format = c("WAV", "wav", "mp3", "MP3"),
   time = c("ctime", "mtime"),
+  write_text = TRUE,
   simulate = FALSE
 )
 }
@@ -20,6 +21,8 @@ rename_recording(
 \item{format}{Format of sound files (default and suggested is to use WAV).}
 
 \item{time}{Either ctime or mtime}
+
+\item{write_text}{logical, if TRUE exports a text file with information about file renaming}
 
 \item{simulate}{logical. If TRUE only shows data frame of names without touching files}
 }

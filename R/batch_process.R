@@ -42,6 +42,7 @@
 #' @param .onsplit Logical. by default searches for sub folder split and bases analyses on segmented files if found. Also switched to TRUE if segment is not NULL.
 
 #' @inheritParams extract_events
+#' @inheritParams rename_recording
 #' @return Data frame with extracted events if \code{\link{extract_events}} was queried.
 #' @export
 #'
@@ -60,6 +61,7 @@ batch_process <- function(
   target = td_presets("Bubo bubo"),
   recorder = c("AudioMoth", "Olympus LS-3", "Sony PCM-D100"),
   time = c("mtime", "ctime"),
+  write_text = FALSE,
   .onsplit = TRUE) {
 
   ## Print start time and info
@@ -110,7 +112,7 @@ batch_process <- function(
   ## ---------------------------------------------------------------------------
   if ("1" %in% steps & rename == TRUE) {
     cat("Rename recodings ... \t")
-    rename_recording(path = path, recorder = recorder, format = format, time = time)
+    rename_recording(path = path, recorder = recorder, format = format, time = time, write_text = write_text)
     cat("done\n")
   }
 

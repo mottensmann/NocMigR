@@ -19,6 +19,7 @@ batch_process(
   target = td_presets("Bubo bubo"),
   recorder = c("AudioMoth", "Olympus LS-3", "Sony PCM-D100"),
   time = c("mtime", "ctime"),
+  write_text = FALSE,
   .onsplit = TRUE
 )
 }
@@ -50,6 +51,8 @@ batch_process(
 \item{recorder}{Currently three templates to ensure correct handling of times. \bold{Only relevant if \code{rename = TRUE}!}.}
 
 \item{time}{Controls, if ctime or mtime is used to compute date_time objects. \bold{Only relevant if \code{rename = TRUE}!}}
+
+\item{write_text}{logical, if TRUE exports a text file with information about file renaming}
 
 \item{.onsplit}{Logical. by default searches for sub folder split and bases analyses on segmented files if found. Also switched to TRUE if segment is not NULL.}
 }
