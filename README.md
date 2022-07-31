@@ -101,9 +101,9 @@ rename_recording(path = "example",
                  recorder = "Sony PCM-D100",
                  simulate = T)
 #>                                        old.name  seconds                time
-#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-03-17 13:55:17
+#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-07-31 23:33:29
 #>                                        new.name
-#> example/20211220_064253.wav 20220317_135517.wav
+#> example/20211220_064253.wav 20220731_233329.wav
 ```
 
 ### 2.) `split_wave`: Divide long recordings
@@ -241,7 +241,7 @@ batch_process(
                       LPF = 5000, # low-pass filter at 500 Hz
                       HPF = 1000),
   rename = FALSE)
-#> Start processing:     2022-03-17 13:55:28     [Input audio 5 minutes @ 44100 Hz ]
+#> Start processing:     2022-07-31 23:33:39     [Input audio 5 minutes @ 44100 Hz ]
 #> Search for events ...
 #> done
 #> Extract events ... 
@@ -252,11 +252,15 @@ batch_process(
 #> Merge events and write audio example/merged_events.WAV
 #> 
 #> Existing files merged_events.WAV  will be overwritten!
-#> Finished processing:  2022-03-17 13:55:29 
-#>  Run time:    1.35 seconds
+#> Finished processing:  2022-07-31 23:33:41 
+#>  Run time:    1.32 seconds
 #>              filename    from        to       starting_time   event
-#> 1 20211220_064253.wav  45.576  50.38133 2021-12-20 06:43:39  46.576
-#> 2 20211220_064253.wav 152.434 156.35420 2021-12-20 06:45:26 153.434
+#> 1 20211220_064253.wav  45.576  47.62258 2021-12-20 06:43:39  46.576
+#> 2 20211220_064253.wav  46.045  48.09204 2021-12-20 06:43:40  47.045
+#> 3 20211220_064253.wav  46.887  49.32528 2021-12-20 06:43:40  47.887
+#> 4 20211220_064253.wav  47.774  49.82277 2021-12-20 06:43:41  48.774
+#> 5 20211220_064253.wav  48.332  50.38133 2021-12-20 06:43:42  49.332
+#> 6 20211220_064253.wav 152.434 156.35420 2021-12-20 06:45:26 153.434
 ```
 
 | Recording | Sample.rate | Downsampled | Channels | Run.time |
@@ -290,6 +294,20 @@ NocMig night!
     #> | 114.99 h  |  48000 Hz   |  441000 Hz  |   Mono   | 26.79 min |
     #> 
     #> Table: 115h AudioMoth recording, notebook ~ AMD RYZEN 7, 16 cores ~ 24 GB RAM
+
+## `Header for observation lists on ornith.de`
+
+Retrieve weather data via [Bright Sky](https://brightsky.dev/) (de
+Maeyer 2020) and compose a string describing a NocMig session from dusk
+to dawn for a given location. Note, the comment follows suggestions by
+[Schütze *et al* 2022,
+HGON](https://www.hgon.de/fileadmin/HGONContent/03-Beobachten/07-NocMig/NocMig_Methodenstandardisierung_V1.pdf)
+
+``` r
+NocMig_meta(date = as.Date("2022-07-29"))
+#> Teilliste 1: 29.7-30.7.2022, 22:05-05:03, Bedeckt, 16°C, 4 km/h 
+#> Teilliste 2: 29.7-30.7.2022, 22:05-05:03, bedeckt, 15°C, 3 km/h
+```
 
 ------------------------------------------------------------------------
 

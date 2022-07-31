@@ -226,6 +226,18 @@ my_data <- data.frame(
 pander::pandoc.table(my_data, style="rmarkdown", "115h AudioMoth recording, notebook ~ AMD RYZEN 7, 16 cores ~ 24 GB RAM")
 ```
 
+## `Header for observation lists on ornith.de`
+
+Retrieve weather data via [Bright Sky](https://brightsky.dev/) (de Maeyer 2020) and compose a string describing a NocMig session from dusk to dawn for a given location. Note, the comment follows suggestions by [Schütze *et al* 2022, HGON](https://www.hgon.de/fileadmin/HGONContent/03-Beobachten/07-NocMig/NocMig_Methodenstandardisierung_V1.pdf)
+
+```{r}
+## example for Bielefeld
+## -----------------------------------------------------------------------------
+NocMig_meta(date = Sys.Date() - 2,
+            lat = 52.032,
+            lon = 8.517)
+```
+
 
 ___
 

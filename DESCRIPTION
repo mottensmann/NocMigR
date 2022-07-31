@@ -22,8 +22,10 @@ Imports:
     dplyr,
     lubridate,
     pbapply,
-    stringr
-RoxygenNote: 7.1.2
+    stringr,
+RoxygenNote: 7.2.1
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    suncalc,
+    lubridate
 Config/testthat/edition: 3
