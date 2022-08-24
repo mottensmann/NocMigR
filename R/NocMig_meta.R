@@ -79,13 +79,18 @@ NocMig_meta <- function(
     "W", "WNW", "NW", "NNW",
     "N")
 
-
   out1 <- data.frame(
     icon = dplyr::case_when(
+      getmode(df_dawn_midnight$icon) == "rain" ~ "regnerisch",
       getmode(df_dawn_midnight$icon) == "cloudy" ~ "bedeckt",
       getmode(df_dawn_midnight$icon) == "clear-night" ~ "klar",
+      getmode(df_dawn_midnight$icon) == "clear" ~ "klar",
       getmode(df_dawn_midnight$icon) == "partly-cloudy-night" ~ "beils bedeckt",
       TRUE ~ getmode(df_midnight_dusk$icon)),
+    cond = dplyr::case_when(
+      getmode(df_dawn_midnight$condition) == "rain" ~ "regnerisch",
+      getmode(df_dawn_midnight$condition) == "dry" ~ "trocken",
+      TRUE ~ getmode(df_midnight_dusk$condition)),
     temp = round(mean(df_dawn_midnight$temperature, na.rm = T),0),
     wind_dir =
       cut(mean(df_dawn_midnight$wind_direction, na.rm = T),
@@ -98,10 +103,16 @@ NocMig_meta <- function(
 
   out2 <- data.frame(
     icon = dplyr::case_when(
+      getmode(df_midnight_dusk$icon) == "rain" ~ "regnerisch",
       getmode(df_midnight_dusk$icon) == "cloudy" ~ "bedeckt",
       getmode(df_midnight_dusk$icon) == "clear-night" ~ "klar",
+      getmode(df_midnight_dusk$icon) == "clear" ~ "klar",
       getmode(df_midnight_dusk$icon) == "partly-cloudy-night" ~ "teils bedeckt",
-      TRUE ~ getmode(df_midnight_dusk$icon)) ,
+      TRUE ~ getmode(df_midnight_dusk$icon)),
+    cond = dplyr::case_when(
+      getmode(df_midnight_dusk$condition) == "rain" ~ "regnerisch",
+      getmode(df_midnight_dusk$condition) == "dry" ~ "trocken",
+      TRUE ~ getmode(df_midnight_dusk$condition)),
     temp = round(mean(df_midnight_dusk$temperature, na.rm = T),0),
     wind_dir =
       cut(mean(df_midnight_dusk$wind_direction, na.rm = T),
@@ -115,13 +126,23 @@ NocMig_meta <- function(
   ## output strings
   ## -----------------------------------------------------------------------------
   part1 <- paste0("Teilliste 1: ",
-                  dusk_dawn$string, ", ", out1$icon, ", ", out1$temp, "°C", ", ",
-                  out2$wind_dir, ", ",
+                  dusk_dawn$string, ", ", out1$icon, "-",
+                  out1$cond, ", ",
+                  out1$temp, "°C", ", ",
+                  out1$wind_dir, ", ",
                   out1$wind_speed, " km/h")
+  if (stringr::str_detect(part1, "regnerisch-regnerisch")) {
+    stringr::str_replace(part1, "regnerisch-regnerisch", "regnerisch")
+  }
   part2 <- paste0("Teilliste 2: ",
-                  dusk_dawn$string, ", ", out2$icon, ", ", out2$temp, "°C", ", ",
+                  dusk_dawn$string, ", ", out2$icon, "-",
+                  out2$cond,", ",
+                  out2$temp, "°C", ", ",
                   out2$wind_dir, ", ",
                   out2$wind_speed, " km/h")
+  if (stringr::str_detect(part2, "regnerisch-regnerisch")) {
+    stringr::str_replace(part2, "regnerisch-regnerisch", "regnerisch")
+  }
   cat(part1,"\n")
   cat(part2)
 }
