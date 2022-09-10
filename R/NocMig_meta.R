@@ -85,7 +85,7 @@ NocMig_meta <- function(
       getmode(df_dawn_midnight$icon) == "cloudy" ~ "bedeckt",
       getmode(df_dawn_midnight$icon) == "clear-night" ~ "klar",
       getmode(df_dawn_midnight$icon) == "clear" ~ "klar",
-      getmode(df_dawn_midnight$icon) == "partly-cloudy-night" ~ "beils bedeckt",
+      getmode(df_dawn_midnight$icon) == "partly-cloudy-night" ~ "teils bedeckt",
       TRUE ~ getmode(df_midnight_dusk$icon)),
     cond = dplyr::case_when(
       getmode(df_dawn_midnight$condition) == "rain" ~ "regnerisch",
@@ -132,7 +132,7 @@ NocMig_meta <- function(
                   out1$wind_dir, ", ",
                   out1$wind_speed, " km/h")
   if (stringr::str_detect(part1, "regnerisch-regnerisch")) {
-    stringr::str_replace(part1, "regnerisch-regnerisch", "regnerisch")
+    part1 <- stringr::str_replace(part1, "regnerisch-regnerisch", "regnerisch")
   }
   part2 <- paste0("Teilliste 2: ",
                   dusk_dawn$string, ", ", out2$icon, "-",
@@ -141,7 +141,7 @@ NocMig_meta <- function(
                   out2$wind_dir, ", ",
                   out2$wind_speed, " km/h")
   if (stringr::str_detect(part2, "regnerisch-regnerisch")) {
-    stringr::str_replace(part2, "regnerisch-regnerisch", "regnerisch")
+    part2 <- stringr::str_replace(part2, "regnerisch-regnerisch", "regnerisch")
   }
   cat(part1,"\n")
   cat(part2)

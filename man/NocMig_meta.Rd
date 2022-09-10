@@ -4,12 +4,7 @@
 \alias{NocMig_meta}
 \title{Description of dusk, dawn and weather during NocMig recording session}
 \usage{
-NocMig_meta(
-  lat = 52.03209,
-  lon = 8.516775,
-  date = Sys.Date() - 1,
-  IDs = c(56857, 7369)
-)
+NocMig_meta(lat = 52.03209, lon = 8.516775, date = Sys.Date() - 1)
 }
 \arguments{
 \item{lat}{latitude}
@@ -17,8 +12,6 @@ NocMig_meta(
 \item{lon}{longitude}
 
 \item{date}{start date of NocMig recording}
-
-\item{IDs}{DWD station ID. see \code{\link[rdwd]{findID}}) for help. Note, two IDs are required, denoting current and historical weather records. By default, selectes Bielefeld-Deppendorf}
 }
 \description{
 Description of dusk, dawn and weather during NocMig recording session
