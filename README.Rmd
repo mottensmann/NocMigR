@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 ## NocMigR package
 ___
 
-This package is in a *very* preliminary state and provides some workflows for processing large sound files (e.g., `NocMig`, `NFC`, `AudioMoth`), with a main emphasis on automatising the detection of events (i.e., extracting calls with time-stamps) that can be easily reviewed in [Audacity](https://www.audacityteam.org/).
+This package is in a *very* preliminary state and provides some workflows for processing large sound files (e.g., `NocMig`, `NFC`, `AudioMoth`), with a main emphasis on automatising the detection of events (i.e., extracting calls with time-stamps) that can be easily reviewed in [Audacity](https://www.audacityteam.org/). **Note: On the occasion of some recent changes to the data privacy policy and ownership of Audacity I highly suggest to stick to version 3.0.2!**
 
 **All major computation steps are carried out by sophisticated libraries called in the background. Including:**
 

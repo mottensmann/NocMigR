@@ -7,7 +7,9 @@ This package is in a *very* preliminary state and provides some
 workflows for processing large sound files (e.g., `NocMig`, `NFC`,
 `AudioMoth`), with a main emphasis on automatising the detection of
 events (i.e., extracting calls with time-stamps) that can be easily
-reviewed in [Audacity](https://www.audacityteam.org/).
+reviewed in [Audacity](https://www.audacityteam.org/). **Note: On the
+occasion of some recent changes to the data privacy policy and ownership
+of Audacity I highly suggest to stick to version 3.0.2!**
 
 **All major computation steps are carried out by sophisticated libraries
 called in the background. Including:**
@@ -101,9 +103,9 @@ rename_recording(path = "example",
                  recorder = "Sony PCM-D100",
                  simulate = T)
 #>                                        old.name  seconds                time
-#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-08-01 00:57:31
+#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-09-27 13:45:55
 #>                                        new.name
-#> example/20211220_064253.wav 20220801_005731.wav
+#> example/20211220_064253.wav 20220927_134555.wav
 ```
 
 ### 2.) `split_wave`: Divide long recordings
@@ -178,7 +180,7 @@ bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
 In addition to the output shown above, a file with labels for reviewing
 events in `Audacity` is created (wrapping `seewave::write.audacity()`).
 
-<img src="inst/extdata/screenshot_1.PNG" title="Screenshot: Audacity raw labels" alt="Screenshot: Audacity raw labels" width="900px" style="display: block; margin: auto;" />
+<img src="inst/extdata/screenshot_1.PNG" alt="Screenshot: Audacity raw labels" width="900px" style="display: block; margin: auto;" />
 
 ### 4.) `extract_events`: Subset original recording file
 
@@ -212,7 +214,7 @@ bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
 
 <img src="inst/README-unnamed-chunk-11-1.png" style="display: block; margin: auto;" />
 
-<img src="inst/extdata/screenshot_2.PNG" title="Screenshot: Audacity refined label" alt="Screenshot: Audacity refined label" width="900px" style="display: block; margin: auto;" />
+<img src="inst/extdata/screenshot_2.PNG" alt="Screenshot: Audacity refined label" width="900px" style="display: block; margin: auto;" />
 
 ### 5.) `merge_events`: Pool all detected events
 
@@ -241,7 +243,7 @@ batch_process(
                       LPF = 5000, # low-pass filter at 500 Hz
                       HPF = 1000),
   rename = FALSE)
-#> Start processing:     2022-08-01 00:57:41     [Input audio 5 minutes @ 44100 Hz ]
+#> Start processing:     2022-09-27 13:46:06     [Input audio 5 minutes @ 44100 Hz ]
 #> Search for events ...
 #> done
 #> Extract events ... 
@@ -252,8 +254,8 @@ batch_process(
 #> Merge events and write audio example/merged_events.WAV
 #> 
 #> Existing files merged_events.WAV  will be overwritten!
-#> Finished processing:  2022-08-01 00:57:42 
-#>  Run time:    1.27 seconds
+#> Finished processing:  2022-09-27 13:46:07 
+#>  Run time:    1.34 seconds
 #>              filename    from        to       starting_time   event
 #> 1 20211220_064253.wav  45.576  47.62258 2021-12-20 06:43:39  46.576
 #> 2 20211220_064253.wav  46.045  48.09204 2021-12-20 06:43:40  47.045
@@ -309,8 +311,8 @@ to dawn for a given location. Note, the comment follows suggestions by
 NocMig_meta(date = Sys.Date() - 2,
             lat = 52.032,
             lon = 8.517)
-#> Teilliste 1: 30.7-31.7.2022, 22:03-05:05, bedeckt, 16°C, SSW, 4 km/h 
-#> Teilliste 2: 30.7-31.7.2022, 22:03-05:05, teils bedeckt, 14°C, SSW, 2 km/h
+#> Teilliste 1: 25.9-26.9.2022, 19:54-06:45, teils bedeckt-trocken, 6°C, SW, 4 km/h 
+#> Teilliste 2: 25.9-26.9.2022, 19:54-06:45, bedeckt-trocken, 9°C, SSW, 6 km/h
 ```
 
 ------------------------------------------------------------------------
