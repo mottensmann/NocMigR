@@ -86,12 +86,12 @@ find_events <- function(wav.file = NULL,
           is.numeric(as.numeric(substr(head, 1, 8))) &
           is.numeric(as.numeric(substr(head, 10, 15)))) {
         origin <- lubridate::make_datetime(
-          year = substr(head, 1, 4),
-          month = substr(head, 5, 6),
-          day = substr(head, 7, 8),
-          hour = substr(head, 10, 11),
-          min =  substr(head, 12, 13),
-          sec = substr(head, 14, 15))
+          year = as.numeric(substr(head, 1, 4)),
+          month = as.numeric(substr(head, 5, 6)),
+          day = as.numeric(substr(head, 7, 8)),
+          hour = as.numeric(substr(head, 10, 11)),
+          min = as.numeric(substr(head, 12, 13)),
+          sec = as.numeric(substr(head, 14, 15)))
       } else {
         origin <- lubridate::make_datetime(2000, 01, 01, 0, 0, 0)
       }
