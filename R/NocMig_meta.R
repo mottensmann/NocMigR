@@ -79,14 +79,18 @@ NocMig_meta <- function(
     "W", "WNW", "NW", "NNW",
     "N")
 
+  # Fri Apr 28 21:24:51 2023 ------------------------------
+  # Remove var icon, apparently not embedded in data frame anymore
+  #
+
   out1 <- data.frame(
-    icon = dplyr::case_when(
-      getmode(df_dawn_midnight$icon) == "rain" ~ "regnerisch",
-      getmode(df_dawn_midnight$icon) == "cloudy" ~ "bedeckt",
-      getmode(df_dawn_midnight$icon) == "clear-night" ~ "klar",
-      getmode(df_dawn_midnight$icon) == "clear" ~ "klar",
-      getmode(df_dawn_midnight$icon) == "partly-cloudy-night" ~ "teils bedeckt",
-      TRUE ~ getmode(df_midnight_dusk$icon)),
+    # icon = dplyr::case_when(
+    #   getmode(df_dawn_midnight$icon) == "rain" ~ "regnerisch",
+    #   getmode(df_dawn_midnight$icon) == "cloudy" ~ "bedeckt",
+    #   getmode(df_dawn_midnight$icon) == "clear-night" ~ "klar",
+    #   getmode(df_dawn_midnight$icon) == "clear" ~ "klar",
+    #   getmode(df_dawn_midnight$icon) == "partly-cloudy-night" ~ "teils bedeckt",
+    #   TRUE ~ getmode(df_midnight_dusk$icon)),
     cond = dplyr::case_when(
       getmode(df_dawn_midnight$condition) == "rain" ~ "regnerisch",
       getmode(df_dawn_midnight$condition) == "dry" ~ "trocken",
@@ -102,13 +106,13 @@ NocMig_meta <- function(
     wind_speed = round(mean(df_dawn_midnight$wind_speed, na.rm = T),0))
 
   out2 <- data.frame(
-    icon = dplyr::case_when(
-      getmode(df_midnight_dusk$icon) == "rain" ~ "regnerisch",
-      getmode(df_midnight_dusk$icon) == "cloudy" ~ "bedeckt",
-      getmode(df_midnight_dusk$icon) == "clear-night" ~ "klar",
-      getmode(df_midnight_dusk$icon) == "clear" ~ "klar",
-      getmode(df_midnight_dusk$icon) == "partly-cloudy-night" ~ "teils bedeckt",
-      TRUE ~ getmode(df_midnight_dusk$icon)),
+    # icon = dplyr::case_when(
+    #   getmode(df_midnight_dusk$icon) == "rain" ~ "regnerisch",
+    #   getmode(df_midnight_dusk$icon) == "cloudy" ~ "bedeckt",
+    #   getmode(df_midnight_dusk$icon) == "clear-night" ~ "klar",
+    #   getmode(df_midnight_dusk$icon) == "clear" ~ "klar",
+    #   getmode(df_midnight_dusk$icon) == "partly-cloudy-night" ~ "teils bedeckt",
+    #   TRUE ~ getmode(df_midnight_dusk$icon)),
     cond = dplyr::case_when(
       getmode(df_midnight_dusk$condition) == "rain" ~ "regnerisch",
       getmode(df_midnight_dusk$condition) == "dry" ~ "trocken",
@@ -126,7 +130,8 @@ NocMig_meta <- function(
   ## output strings
   ## -----------------------------------------------------------------------------
   part1 <- paste0("Teilliste 1: ",
-                  dusk_dawn$string, ", ", out1$icon, "-",
+                  dusk_dawn$string, ", ",
+                  #out1$icon, "-",
                   out1$cond, ", ",
                   out1$temp, "°C", ", ",
                   out1$wind_dir, ", ",
@@ -135,7 +140,8 @@ NocMig_meta <- function(
     part1 <- stringr::str_replace(part1, "regnerisch-regnerisch", "regnerisch")
   }
   part2 <- paste0("Teilliste 2: ",
-                  dusk_dawn$string, ", ", out2$icon, "-",
+                  dusk_dawn$string, ", ",
+                  #out2$icon, "-",
                   out2$cond,", ",
                   out2$temp, "°C", ", ",
                   out2$wind_dir, ", ",
