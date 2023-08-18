@@ -1,6 +1,9 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 xeno-canto/
-debugger.R
 NocMigApp
 README.Rmd
+R/ideas
+BirdNET-audio/
+BirdNET-results/
+debugging/

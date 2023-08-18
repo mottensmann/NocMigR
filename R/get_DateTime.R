@@ -17,12 +17,12 @@ get_DateTime <- function(target, target.path) {
     sec <- as.numeric(summary(info)[[1]])/info@samp.rate
   }
   start <- lubridate::make_datetime(
-    year = substr(target, 1, 4),
-    month = substr(target, 5, 6),
-    day = substr(target, 7, 8),
-    hour = substr(target, 10, 11),
-    min =  substr(target, 12, 13),
-    sec = substr(target, 14, 15))
+    year = as.numeric(substr(target, 1, 4)),
+    month = as.numeric(substr(target, 5, 6)),
+    day = as.numeric(substr(target, 7, 8)),
+    hour = as.numeric(substr(target, 10, 11)),
+    min =  as.numeric(substr(target, 12, 13)),
+    sec = as.numeric(substr(target, 14, 15)))
 
   return(data.frame(file = target,
              path = target.path,

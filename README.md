@@ -14,21 +14,21 @@ of Audacity I highly suggest to stick to version 3.0.2!**
 **All major computation steps are carried out by sophisticated libraries
 called in the background. Including:**
 
--   **R packages**
+- **R packages**
 
--   [bioacoustics](https://cran.r-project.org/package=bioacoustics)
+- [bioacoustics](https://cran.r-project.org/package=bioacoustics)
 
--   [tuneR](https://cran.r-project.org/package=tuneR)
+- [tuneR](https://cran.r-project.org/package=tuneR)
 
--   [seewave](https://cran.r-project.org/package=seewave)
+- [seewave](https://cran.r-project.org/package=seewave)
 
--   [Warbler](https://cran.r-project.org/package=warbleR)
+- [Warbler](https://cran.r-project.org/package=warbleR)
 
--   **python packages**
+- **python packages**
 
--   [audioop](https://docs.python.org/3/library/audioop.html)
+- [audioop](https://docs.python.org/3/library/audioop.html)
 
--   [pydub](https://github.com/jiaaro/pydub)
+- [pydub](https://github.com/jiaaro/pydub)
 
 To install the package, use …
 
@@ -60,6 +60,7 @@ passerinum*).
 path <- system.file("extdata", "20211220_064253.mp3", package = "NocMigR")
 ## create temp folder
 dir.create("example")
+#> Warning in dir.create("example"): 'example' already exists
 ## copy to test_folder
 file.copy(path, "example")
 ## convert to wav
@@ -92,9 +93,9 @@ string is embedded in the meta data of the recording (accessible using
 For instance, long recording sessions using an Olympus LS-3 will create
 multiple files, all of which share the same creation and modification
 times (with respect to the first recording). By contrast, the Sony
-PCM-D100 saves files individuals (i.e, all have unique ctimes and
-mtimes). Presets to rename files are available for both types described
-here.
+PCM-D100 saves files individuals (i.e, all have unique *ctimes* and
+*mtimes*). Presets to rename files are available for both types
+described here.
 
 ``` r
 ## only simulate output as file is already labelled
@@ -103,9 +104,9 @@ rename_recording(path = "example",
                  recorder = "Sony PCM-D100",
                  simulate = T)
 #>                                        old.name  seconds                time
-#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2022-09-27 13:45:55
+#> example/20211220_064253.wav 20211220_064253.wav 300.0686 2023-08-18 12:04:34
 #>                                        new.name
-#> example/20211220_064253.wav 20220927_134555.wav
+#> example/20211220_064253.wav 20230818_120434.wav
 ```
 
 ### 2.) `split_wave`: Divide long recordings
@@ -180,7 +181,14 @@ bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
 In addition to the output shown above, a file with labels for reviewing
 events in `Audacity` is created (wrapping `seewave::write.audacity()`).
 
-<img src="inst/extdata/screenshot_1.PNG" alt="Screenshot: Audacity raw labels" width="900px" style="display: block; margin: auto;" />
+<div class="figure" style="text-align: center">
+
+<img src="inst/extdata/screenshot_1.PNG" alt="Screenshot: Audacity raw labels" width="900px" />
+<p class="caption">
+Screenshot: Audacity raw labels
+</p>
+
+</div>
 
 ### 4.) `extract_events`: Subset original recording file
 
@@ -214,7 +222,14 @@ bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
 
 <img src="inst/README-unnamed-chunk-11-1.png" style="display: block; margin: auto;" />
 
-<img src="inst/extdata/screenshot_2.PNG" alt="Screenshot: Audacity refined label" width="900px" style="display: block; margin: auto;" />
+<div class="figure" style="text-align: center">
+
+<img src="inst/extdata/screenshot_2.PNG" alt="Screenshot: Audacity refined label" width="900px" />
+<p class="caption">
+Screenshot: Audacity refined label
+</p>
+
+</div>
 
 ### 5.) `merge_events`: Pool all detected events
 
@@ -243,7 +258,7 @@ batch_process(
                       LPF = 5000, # low-pass filter at 500 Hz
                       HPF = 1000),
   rename = FALSE)
-#> Start processing:     2022-09-27 13:46:06     [Input audio 5 minutes @ 44100 Hz ]
+#> Start processing:     2023-08-18 12:17:53     [Input audio 5 minutes @ 44100 Hz ]
 #> Search for events ...
 #> done
 #> Extract events ... 
@@ -254,8 +269,8 @@ batch_process(
 #> Merge events and write audio example/merged_events.WAV
 #> 
 #> Existing files merged_events.WAV  will be overwritten!
-#> Finished processing:  2022-09-27 13:46:07 
-#>  Run time:    1.34 seconds
+#> Finished processing:  2023-08-18 12:17:54 
+#>  Run time:    1.45 seconds
 #>              filename    from        to       starting_time   event
 #> 1 20211220_064253.wav  45.576  47.62258 2021-12-20 06:43:39  46.576
 #> 2 20211220_064253.wav  46.045  48.09204 2021-12-20 06:43:40  47.045
@@ -273,13 +288,13 @@ batch_process(
 |  10.6 h   |  96000 Hz   |  441000 Hz  |   Mono   |  1.3 h   |
 |   2.73    |  96000 Hz   |  441000 Hz  |   Mono   | 4.88 min |
 
-Run times all steps, notebook \~ Intel i5-4210M, 2 cores \~ 8 GB RAM
+Run times all steps, notebook ~ Intel i5-4210M, 2 cores ~ 8 GB RAM
 
 | Recording | Sample.rate | Downsampled | Channels | Run.time  |
 |:---------:|:-----------:|:-----------:|:--------:|:---------:|
 |   7.5 h   |  96000 Hz   |  441000 Hz  |   Mono   | 14.52 min |
 
-Run times only event detection, notebook \~ Intel i5-4210M, 2 cores \~ 8
+Run times only event detection, notebook ~ Intel i5-4210M, 2 cores ~ 8
 GB RAM
 
 **Update:**
@@ -311,8 +326,67 @@ to dawn for a given location. Note, the comment follows suggestions by
 NocMig_meta(date = Sys.Date() - 2,
             lat = 52.032,
             lon = 8.517)
-#> Teilliste 1: 25.9-26.9.2022, 19:54-06:45, teils bedeckt-trocken, 6°C, SW, 4 km/h 
-#> Teilliste 2: 25.9-26.9.2022, 19:54-06:45, bedeckt-trocken, 9°C, SSW, 6 km/h
+#> Teilliste 1: 16.8-17.8.2023, 21:29-05:35, trocken, 18°C, NNE, 12 km/h 
+#> Teilliste 2: 16.8-17.8.2023, 21:29-05:35, regnerisch, 16°C, E, 9 km/h
+```
+
+## `Integrating BirdNET-Analyzer in processing routine`
+
+Recently I started to play with
+[BirdNET](https://github.com/kahst/BirdNET-Analyzer#setup-ubuntu) as a
+pre-processing tool. First trials suggest that only few bird calls of
+interest are missed, and the majority is correctly labelled using the
+[BirdNET_GLOBAL_6K_V2.4](https://github.com/kahst/BirdNET-Analyzer/tree/main/checkpoints/V2.4)
+model. *Currently, it is rather difficult to run BirdNET through
+RStudio, and hence a few lines of python code are pasted to a Linux
+(Ubuntu) command line*
+
+#### 1.) Just rename recordings
+
+``` r
+## Rename depending on Recorder settings and file format
+## -----------------------------------------------------------------------------
+rename_recording(path = "example", format = "wav", simulate = TRUE)
+```
+
+#### 2.) Run `BirdNET-Analyzer` using command line
+
+- Setup list of target species
+
+``` r
+## Creates a species list by subsetting from the full model 
+## Currently, only using the german species names. 
+## see ?BirdNET_species.list for details
+## -----------------------------------------------------------------
+BirdNET_species.list(names = c("Sperlingskauz", "Uhu"),
+                     out = "example/species.txt")
+#> # A tibble: 2 × 2
+#>   scientific_name       englisch_name     
+#>   <chr>                 <chr>             
+#> 1 Bubo bubo             Eurasian Eagle-Owl
+#> 2 Glaucidium passerinum Eurasian Pygmy-Owl
+```
+
+``` python
+## change directory
+## -------------------
+cd BirdNET-Analyzer
+
+## run BirdNET-Analyzer
+## --------------------
+python3 analyze.py --i /exampele --o /exampele --slist /example/species.txt --rtype 'audacity' --threads 1 --locale 'de'
+```
+
+#### 3.) Adjust audacity labels
+
+``` r
+## reformat audacity labels 
+df <- BirdNET_results2txt(path = "example/")
+df[,c("t1", "t2", "labelNEW")]
+#t1   t2  labelNEW
+#45   48    Sperlingskauz 2021-12-20 06:43:38 [ 0.52 ]      
+#156    159 Sperlingskauz 2021-12-20 06:45:29 [ 0.38 ]      
+#162    165 Sperlingskauz 2021-12-20 06:45:35 [ 0.13 ]
 ```
 
 ------------------------------------------------------------------------

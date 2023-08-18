@@ -5,7 +5,14 @@
 internal
 .wav
 data/
-debugger.R
 NocMigApp/
 xeno-canto/
 example/
+R/ideas
+BirdNET-audio/
+BirdNET-results/
+debugging/
+BirdNET-Analyzer.Rmd
+BirdNET-Pi*
+birds_db*
+bird_db*

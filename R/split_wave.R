@@ -64,7 +64,7 @@ split_wave <- function(path = NULL,
     }
     ## check that scripts produced output
     wave_file <- new_wave_file
-    if(check == FALSE) stop("Python error")
+    if (check == FALSE) stop("Python error")
     cat("done\n")
   }
 

@@ -25,7 +25,7 @@ rename_recording <- function(path = NULL,
 
   ## list recordings
   records <- list.files(path = path, pattern = format)
-  if (length(records) == 0) stop("No ", format, " files found at", path)
+  if (length(records) == 0) stop("No ", format, " files found at ", path)
   ## get duration of recordings
   seconds <- sapply(file.path(path, records), function(x) {
 

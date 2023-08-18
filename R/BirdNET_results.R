@@ -1,0 +1,70 @@
+#' Modify 'BirdNET.results.txt' created by BirdNET-Analyzer
+#'
+#' @param path path to text files
+#' @description
+#' Tweaks audacity labels by composing a string consisting of species name, recording date and time and detection score (e.g. "Waldwasserläufer 2023-08-15 [0.89]"). Overwrites original text files!
+#'
+#' @details
+#' #' Reads text file containing audacity labels that were created by running the BirdNET analyzer script. Note, specifying rtype 'audacity' is required. Output is reformatted by adding the correct time stamp (estimated from file names) to the detected events
+#'
+#' @return data frame
+#'
+#' @export
+#'
+BirdNET_results2txt <- function(path = NULL) {
+
+  if (!dir.exists(path)) stop("provide valid path")
+
+  ## 0.) Check 'BirdNET.results.txt'
+  ## -----------------------------------------------------------------------------
+  BirdNET.results.files <- list.files(path = path, pattern = "BirdNET.results.txt", full.names = T)
+
+  empty_files <- as.logical((sapply(BirdNET.results.files, file.size) == 0))
+
+  if (any(empty_files == TRUE)) {
+    unlink(BirdNET.results.files[empty_files == TRUE])
+    BirdNET.results.files <- BirdNET.results.files[which(empty_files == FALSE)]
+  }
+
+
+  if (length(BirdNET.results.files >= 1)) {
+    ## ---------------------------------------------------------------------------
+    BirdNET.results.list <- lapply(BirdNET.results.files, seewave::read.audacity)
+    results <- data.frame()
+
+    for (i in 1:length(BirdNET.results.files)) {
+      BirdNET.results.df <- BirdNET.results.list[[i]]
+      names(BirdNET.results.df)[5] <- "Score"
+      BirdNET.results.df$Score <- round(BirdNET.results.df$Score, 2)
+      ## prepare head
+      BirdNET.results.df$x <- stringr::str_remove(BirdNET.results.df$file, path)
+      ## Get recording time from head
+      BirdNET.results.df$Start <- RecreateDateTime(BirdNET.results.df$x)
+
+      ## extract common name form label
+      BirdNET.results.df$label2 <- sapply(BirdNET.results.df$label, function(x) {
+        t <- stringr::str_split(x, ", ")[[1]]
+        return(t[length(t)])
+      })
+
+      BirdNET.results.df$labelNEW <- paste(
+        BirdNET.results.df$label2,
+        BirdNET.results.df[["Start"]] + BirdNET.results.df[["t1"]],
+        "[", BirdNET.results.df[["Score"]],"]")
+
+      ## write to file
+      seewave::write.audacity(
+        x = data.frame(
+          label = BirdNET.results.df[["labelNEW"]],
+          t1 = BirdNET.results.df[["t1"]],
+          t2 = BirdNET.results.df[["t2"]]),
+        filename = BirdNET.results.df$file[1])
+      results <- rbind(results, BirdNET.results.df)
+    }
+
+
+  } else {
+    warning("Did not find any BirdNET.results.txt files!")
+  }
+  return(results)
+}

@@ -23,7 +23,7 @@ Imports:
     lubridate,
     pbapply,
     stringr,
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Suggests: 
     testthat (>= 3.0.0),
     suncalc,
