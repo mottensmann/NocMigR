@@ -1,23 +1,27 @@
 #' Modify 'BirdNET.results.txt' created by BirdNET-Analyzer
 #'
 #' @param path path to text files
+#' @param recursive logical. Should the listing recurse into directories?
 #' @description
-#' Tweaks audacity labels by composing a string consisting of species name, recording date and time and detection score (e.g. "Waldwasserläufer 2023-08-15 [0.89]"). Overwrites original text files!
+#' Tweaks audacity labels by composing a string consisting of species name, recording date and time and detection score (e.g. "Waldwasserläufer 2023-08-15 [0.89]").
 #'
 #' @details
 #' #' Reads text file containing audacity labels that were created by running the BirdNET analyzer script. Note, specifying rtype 'audacity' is required. Output is reformatted by adding the correct time stamp (estimated from file names) to the detected events
 #'
 #' @return data frame
 #'
-#' @export
+#' @keywords internal
 #'
-BirdNET_results2txt <- function(path = NULL) {
+BirdNET_results2txt <- function(path = NULL, recursive = FALSE) {
 
   if (!dir.exists(path)) stop("provide valid path")
 
   ## 0.) Check 'BirdNET.results.txt'
   ## -----------------------------------------------------------------------------
-  BirdNET.results.files <- list.files(path = path, pattern = "BirdNET.results.txt", full.names = T)
+  BirdNET.results.files <- list.files(path = path,
+                                      pattern = "BirdNET.results.txt",
+                                      full.names = T,
+                                      recursive = recursive)
 
   empty_files <- as.logical((sapply(BirdNET.results.files, file.size) == 0))
 
@@ -35,9 +39,13 @@ BirdNET_results2txt <- function(path = NULL) {
     for (i in 1:length(BirdNET.results.files)) {
       BirdNET.results.df <- BirdNET.results.list[[i]]
       names(BirdNET.results.df)[5] <- "Score"
-      BirdNET.results.df$Score <- round(BirdNET.results.df$Score, 2)
+      BirdNET.results.df$Score <- round(BirdNET.results.df$Score, 3)
       ## prepare head
-      BirdNET.results.df$x <- stringr::str_remove(BirdNET.results.df$file, path)
+      BirdNET.results.df$x <- sapply(BirdNET.results.df$file, function(x) {
+        out <- stringr::str_split(x, "/")[[1]]
+        as.character(out[length(out)])
+      })
+
       ## Get recording time from head
       BirdNET.results.df$Start <- RecreateDateTime(BirdNET.results.df$x)
 
@@ -58,7 +66,9 @@ BirdNET_results2txt <- function(path = NULL) {
           label = BirdNET.results.df[["labelNEW"]],
           t1 = BirdNET.results.df[["t1"]],
           t2 = BirdNET.results.df[["t2"]]),
-        filename = BirdNET.results.df$file[1])
+        filename = stringr::str_replace(string = BirdNET.results.df$file[1],
+                                        pattern = "BirdNET.results.txt" ,
+                                        replacement = "BirdNET.labels.txt"))
       results <- rbind(results, BirdNET.results.df)
     }
 

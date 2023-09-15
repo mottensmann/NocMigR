@@ -4,11 +4,16 @@
 \alias{BirdNET_table}
 \title{Tabulise BirdNET detections}
 \usage{
-BirdNET_table(path = NULL)
+BirdNET_table(path = NULL, recursive = FALSE)
 }
 \arguments{
 \item{path}{path}
+
+\item{recursive}{logical. Should the listing recurse into directories?}
+
+\item{plot}{ggplot}
 }
 \description{
 Tabulise BirdNET detections
 }
+\keyword{internal}

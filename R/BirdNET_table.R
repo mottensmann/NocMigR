@@ -1,15 +1,20 @@
 #' Tabulise BirdNET detections
 #'
 #' @param path path
-#' @import ggplot2 magrittr
-#' @export
+#' @param plot ggplot
+#' @import magrittr
+#' @inheritParams BirdNET_results2txt
+#' @keywords internal
 #'
-BirdNET_table <- function(path = NULL) {
+BirdNET_table <- function(path = NULL, recursive = FALSE) {
   if (!dir.exists(path)) stop("provide valid path")
 
   ## 0.) Check 'BirdNET.results.txt'
   ## -----------------------------------------------------------------------------
-  BirdNET.results.files <- list.files(path = path, pattern = "BirdNET.results.txt", full.names = T)
+  BirdNET.results.files <- list.files(path = path,
+                                      pattern = "BirdNET.labels.txt",
+                                      full.names = T,
+                                      recursive = recursive)
 
 
   if (length(BirdNET.results.files >= 1)) {
@@ -31,28 +36,26 @@ BirdNET_table <- function(path = NULL) {
 
     output <- df
 
+    ## count per day
+    ## -------------------------------------------------------------------------
+    records.day <- df[,c("species", "date")] %>%
+      dplyr::group_by(species, date) %>%
+      dplyr::summarise(n = dplyr::n())
+
     ## count per hour
     ## -------------------------------------------------------------------------
     df <- df[,c("species", "hour")] %>%
       dplyr::group_by(species, hour) %>%
       dplyr::summarise(n = dplyr::n())
 
+
     df[["species"]] <- factor(x = df[["species"]],
                               levels = unique(as.character(sort(df$species, decreasing = TRUE))))
 
+    return(list(records.all = output[,c("species", "date", "time")],
+                records.day = records.day,
+                records.hour = df))
 
-   (plot <- ggplot(df, aes(x = hour, y = species, fill =  n)) +
-      geom_tile(color = "transparent", linewidth = 0.01, na.rm = TRUE) +
-      geom_text(aes(label = n), col = "white") +
-      theme_minimal() +
-      theme(
-        axis.text = element_text(colour = "black", size = 10),
-        axis.title.y = element_blank(),
-        legend.position = "none") +
-      labs(title = "BirdNET Ergebnisse", x = "Stunde") +
-      scale_x_continuous(limits = c(0,24), expand = c(0,0), breaks = seq(0,24,3)) +
-      scale_fill_binned(type = "viridis"))
-    return(list(table = output[,c("species", "date", "time")], summary = df, plot = plot))
   }
 }
 

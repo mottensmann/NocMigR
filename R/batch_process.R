@@ -77,8 +77,6 @@ batch_process <- function(
     cat("Start processing:\t", as.character(t_start),"\n")
   }
 
-
-
   ## get function arguments
   format <- match.arg(format)
   recorder <- match.arg(recorder)
@@ -201,6 +199,17 @@ batch_process <- function(
     ## ---------------------------------------------------------------------------
     if ("5" %in% steps) {
       audacity <- list.files(path = path, full.names = T, pattern = "txt")
+      # Fri Sep 15 22:04:35 2023 ------------------------------
+      audacity <- stringr::str_subset(audacity, "BirdNET.labels.txt", negate = TRUE)
+      audacity <- stringr::str_subset(audacity, "BirdNET.results.txt", negate = TRUE)
+      audacity <- stringr::str_subset(audacity, "species.txt", negate = TRUE)
+      audacity <- stringr::str_subset(audacity, "BirdNET_GLOBAL_6K_V2.4_Labels.txt", negate = TRUE)
+      audacity <- stringr::str_subset(audacity, "BirdNET_GLOBAL_6K_V2.4_Labels_de", negate = TRUE)
+
+
+      # Fri Sep 15 22:04:38 2023 ------------------------------
+
+
       ## kick out _extracted.txt if present
       audacity <- audacity[!stringr::str_detect(audacity, "_extracted.txt")]
       audacity <- audacity[!stringr::str_detect(audacity, "merged_events.txt")]

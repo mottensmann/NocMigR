@@ -4,12 +4,14 @@
 \alias{BirdNET_species.list}
 \title{Create custom species list}
 \usage{
-BirdNET_species.list(names = NULL, out = NULL)
+BirdNET_species.list(names = NULL, out = NULL, scientific = FALSE)
 }
 \arguments{
-\item{names}{character vector}
+\item{names}{character vector. either scientific names or German species names}
 
 \item{out}{path}
+
+\item{scientific}{logical}
 }
 \description{
 Create custom species list

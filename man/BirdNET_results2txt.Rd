@@ -4,17 +4,20 @@
 \alias{BirdNET_results2txt}
 \title{Modify 'BirdNET.results.txt' created by BirdNET-Analyzer}
 \usage{
-BirdNET_results2txt(path = NULL)
+BirdNET_results2txt(path = NULL, recursive = FALSE)
 }
 \arguments{
 \item{path}{path to text files}
+
+\item{recursive}{logical. Should the listing recurse into directories?}
 }
 \value{
 data frame
 }
 \description{
-Tweaks audacity labels by composing a string consisting of species name, recording date and time and detection score (e.g. "Waldwasserläufer 2023-08-15 [0.89]"). Overwrites original text files!
+Tweaks audacity labels by composing a string consisting of species name, recording date and time and detection score (e.g. "Waldwasserläufer 2023-08-15 [0.89]").
 }
 \details{
 #' Reads text file containing audacity labels that were created by running the BirdNET analyzer script. Note, specifying rtype 'audacity' is required. Output is reformatted by adding the correct time stamp (estimated from file names) to the detected events
 }
+\keyword{internal}

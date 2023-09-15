@@ -32,6 +32,7 @@ This package is in a *very* preliminary state and provides some workflows for pr
 
 * **python packages**
 * [audioop](https://docs.python.org/3/library/audioop.html)
+* [BirdNET-Analyzer](https://github.com/kahst/BirdNET-Analyzer)
 * [pydub](https://github.com/jiaaro/pydub)
 
 To install the package, use ...
@@ -51,7 +52,7 @@ library(NocMigR)
 
 ### Load example audio
 
-The package contains an example file captured using an [AudioMoth](https://www.openacousticdevices.info/) recorder. To reduce file size, a segment of five minutes was downsampled to 44.1 kHz and saved as 128 kbps mp3 file. In addition to a lot of noise there is short segment of interest (scale call of a Eurasian Pygmy Owl *Glaucidium passerinum*).
+The package contains an example file captured using an [AudioMoth](https://www.openacousticdevices.info/) recorder. To reduce file size, a segment of five minutes was resampled at 44.1 kHz and saved as 128 kbps mp3 file. In addition to a lot of noise there is short segment of interest (scale call of a Eurasian Pygmy Owl *Glaucidium passerinum*).
 
 ```{r, results='hide'}
 ## get path to test_audio.mp3
@@ -62,27 +63,26 @@ dir.create("example")
 file.copy(path, "example")
 ## convert to wav
 bioacoustics::mp3_to_wav("example/20211220_064253.mp3", delete = T)
+file.rename(from = "example/20211220_064253.wav", to = "example/20211220_064253.WAV")
 ```
 
-Plot spectro to see there is a lot of noise and a few spikes reflecting actual signals ...
+Plot spectrogram to see there is a lot of noise and a few spikes reflecting actual signals ...
 
 ```{r}
 ## read audio
-audio <- tuneR::readWave("example/20211220_064253.wav")
+audio <- tuneR::readWave("example/20211220_064253.WAV")
 ## plot spectrum
 bioacoustics::spectro(audio, FFT_size = 2048, flim = c(0, 5000))
 ```
-
-
 ### 1.) `rename_recording`
 
-Naming files using a string that combines the recording date and starting time (`YYYYMMDD_HHMMSS`) is convenient for archiving and analysing audio files (e.g, default of [AudioMoth](https://www.openacousticdevices.info/)). Some (most?) of the popular field recorders (e.g., Olympus LS, Tascam DR or Sony PCM) use different, rather uninformative naming schemes (date and number at best), but the relevant information to construct a proper date_time string is embedded in the meta data of the recording (accessible using `file.info()`, but requires correct settings of the internal clock!). For instance, long recording sessions using an Olympus LS-3 will create multiple files, all of which share the same creation and modification times (with respect to the first recording). By contrast, the Sony PCM-D100 saves files individuals (i.e, all have  unique *ctimes* and *mtimes*). Presets to rename files are available for both types described here.
+Naming files using a string that combines the recording date and starting time (`YYYYMMDD_HHMMSS`) is convenient for archiving and analysing audio files (e.g, default of [AudioMoth](https://www.openacousticdevices.info/)). Some (most?) of the popular field recorders (e.g., Olympus LS, Tascam DR or Sony PCM) use different, rather uninformative naming schemes (date and number at best), but the relevant information to construct a proper date_time string is embedded in the meta data of the recording (accessible using `file.info()`, but requires correct settings of the internal clock!). For instance, long recording sessions using an Olympus LS-3 will create multiple files, all of which share the same creation and modification times (with respect to the first recording). By contrast, the Sony PCM-D100 saved files individually (i.e., all have  unique *ctimes* and *mtimes*). Presets to rename files are available for both types described here.
 
 ```{r}
-## only simulate output as file is already labelled
+## Simulate = T allows to see what would happen without altering files
 rename_recording(path = "example",
-                 format = "wav",
-                 recorder = "Sony PCM-D100",
+                 format = "WAV",
+                 recorder = "Olympus LS-3",
                  simulate = T)
 ```
 
@@ -93,7 +93,7 @@ This function allows to split long audio recordings into smaller chunks for proc
 
 ```{r}
 ## split in segments
-split_wave(file = "20211220_064253.wav", # which file
+split_wave(file = "20211220_064253.WAV", # which file
            path = "example", # where to find it
            segment = 30, # cut in 30 sec segments
            downsample = 32000) # resample at 32000
@@ -110,7 +110,7 @@ This functions is a wrapper to `bioacoustics::threshold_detection()` aiming at e
 
 ```{r}
 ## run detection threshold algorithm
-TD <- find_events(wav.file = "example/20211220_064253.wav",
+TD <- find_events(wav.file = "example/20211220_064253.WAV",
                   threshold = 8, # Signal-to-noise ratio in db
                   min_dur = 20, # min length in ms
                   max_dur = 300, # max length in ms
@@ -121,7 +121,7 @@ TD <- find_events(wav.file = "example/20211220_064253.wav",
 head(TD$data$event_data[,c("filename", "starting_time", "duration", "freq_max_amp")])
 
 ## display spectrogram based on approximate location of first six events
-audio <- tuneR::readWave("example/20211220_064253.wav",
+audio <- tuneR::readWave("example/20211220_064253.WAV",
                          from = 46,
                          to = 50,
                          units = "seconds")
@@ -134,7 +134,6 @@ In addition to the output shown above, a file with labels for reviewing events i
 knitr::include_graphics("inst/extdata/screenshot_1.PNG")
 ```
 
-
 ### 4.) `extract_events`: Subset original recording file
 
 Refines the output of `find_events` by first adding a buffer (default 1 second on both sides of the event) and subsequently merging overlapping selections to make the output more pretty. Additionally, allows to filter based on expected frequencies (i.e., checks maximum amplitude frequency is within the frequency band defined by `HPF:LPF`)
@@ -143,7 +142,7 @@ Refines the output of `find_events` by first adding a buffer (default 1 second o
 ## extract events based on object TD
 df <- extract_events(threshold_detection = TD, 
                      path = "example",
-                     format = "wav",
+                     format = "WAV",
                      LPF = 4000,
                      HPF = 1000,
                      buffer = 1)
@@ -153,7 +152,7 @@ Display refined events ...
 
 ```{r}
 ## display spectrogram based on first six events
-audio <- tuneR::readWave("example/20211220_064253.wav", 
+audio <- tuneR::readWave("example/20211220_064253.WAV", 
                          from = df$from,
                          to = df$to,
                          units = "seconds")
@@ -180,7 +179,7 @@ Process all files within a directory and run the steps shown above
 ```{r}
 batch_process(
   path = "example",
-  format = "wav",
+  format = "WAV",
   segment = NULL,
   downsample = NULL,
   SNR = 8,
@@ -215,7 +214,7 @@ pander::pandoc.table(my_data, style = "rmarkdown", "Run times only event detecti
 
 **Update:**
 
-With adequate computational power there is no need to split large wave files into segments of one hour. This way, the event detection process is much faster (steps 3:6), usually less than four minutes for an entire NocMig night!
+With adequate computational power there is no need to split even larger wave files into segments of one hour. This way, the event detection process is much faster (steps 3:6), usually less than four minutes for an entire **NocMig** night!
 
 ```{r, eval=TRUE, echo=FALSE}
 my_data <- data.frame(
@@ -227,6 +226,15 @@ my_data <- data.frame(
 )
 
 pander::pandoc.table(my_data, style = "rmarkdown", "115h AudioMoth recording, notebook ~ AMD RYZEN 7, 16 cores ~ 24 GB RAM")
+```
+```{r, echo=FALSE}
+## cleanup unused files
+unlink("example/temp/", recursive = T)
+unlink(x = c("example/20211220_064253_extracted.WAV",
+             "example/merged_events.WAV",
+             "example/merged_events.txt",
+             "example/20211220_064253_extracted.txt",
+             "example/20211220_064253.txt"))
 ```
 
 ## `Header for observation lists on ornitho.de`
@@ -242,53 +250,59 @@ NocMig_meta(date = Sys.Date() - 2,
 ```
 ## `Integrating BirdNET-Analyzer in processing routine`
 
-Recently I started to play with [BirdNET](https://github.com/kahst/BirdNET-Analyzer#setup-ubuntu) as a pre-processing tool. First trials suggest that only few bird calls of interest are missed, and the majority is correctly labelled using the  [BirdNET_GLOBAL_6K_V2.4](https://github.com/kahst/BirdNET-Analyzer/tree/main/checkpoints/V2.4) model. *Currently, it is rather difficult to run BirdNET through RStudio, and hence a few lines of python code are pasted to a Linux (Ubuntu) command line* 
+Recently I started to play with [BirdNET](https://github.com/kahst/BirdNET-Analyzer#setup-ubuntu). First trials suggest that only few calls of interest are missed, and the majority is correctly labelled using the  [BirdNET_GLOBAL_6K_V2.4](https://github.com/kahst/BirdNET-Analyzer/tree/main/checkpoints/V2.4) model. *Currently, it is rather difficult to run BirdNET through RStudio on a windows computer, and hence a few lines of python code are pasted to a Linux (Ubuntu) command line* 
 
-#### 1.) Just rename recordings 
-
-```{r, eval=FALSE}
-## Rename depending on Recorder settings and file format
-## -----------------------------------------------------------------------------
-rename_recording(path = "example", format = "wav", simulate = TRUE)
-```
-#### 2.) Run `BirdNET-Analyzer` using command line
+#### 1.) Run `BirdNET-Analyzer` 
 
 * Setup list of target species
 
 ```{r}
 ## Creates a species list by subsetting from the full model 
-## Currently, only using the german species names. 
-## see ?BirdNET_species.list for details
 ## -----------------------------------------------------------------
-BirdNET_species.list(names = c("Sperlingskauz", "Uhu"),
+BirdNET_species.list(names = c("Glaucidium passerinum", "Bubo bubo"),
+                     scientific = T,
                      out = "example/species.txt")
 ```
 
+Run analyze.py using a command line program (e.g. Ubuntu on windows). See details in the documentation of [Birdnet](https://github.com/kahst/BirdNET-Analyzer)
 
 ```{python, eval = FALSE}
-## change directory
-## -------------------
-cd BirdNET-Analyzer
-
-## run BirdNET-Analyzer
+## run BirdNET-Analyzer in a bash shell
 ## --------------------
 python3 analyze.py --i /exampele --o /exampele --slist /example/species.txt --rtype 'audacity' --threads 1 --locale 'de'
 ```
 
-#### 3.) Adjust audacity labels
+#### 2.) Adjust audacity labels and summarise records
 
-```{r, eval=FALSE}
-## reformat audacity labels 
-df <- BirdNET_results2txt(path = "example/")
-df[,c("t1", "t2", "labelNEW")]
-#t1   t2  labelNEW
-#45	  48	Sperlingskauz 2021-12-20 06:43:38 [ 0.52 ]		
-#156	159	Sperlingskauz 2021-12-20 06:45:29 [ 0.38 ]		
-#162	165	Sperlingskauz 2021-12-20 06:45:35 [ 0.13 ]
+The function `BirdNET` (see ?BirdNET for details) does the following:
+
+(1) Reshape audacity labels created by `analyze.py` to include the event time:
+(2) Write records to xlsx file (BirdNET.xlsx) as a template to simplify inspection and verification:
+
+```{r}
+df <- BirdNET(path = "example/")
+df[["Records"]]
+
+## records per species and day
+df[["Records.dd"]]
+
+## records per species and hour
+df[["Records.hh"]]
 ```
 ___
 
+### 3.) Extract events for review 
+
+Extract detections and export them as wav files. For easier access to verify records files are named as 'Species_Date_Time.WAV' (see below).
+
 ```{r}
+## extract events 
+BirdNET_extract(path = "example/",
+                hyperlink = F) ## If T: create hyperlink as excel formula 
+## show files
+list.files("example/extracted/Sperlingskauz/")
+```
+```{r, eval=FALSE}
 ## clean-up 
 unlink("example", recursive = TRUE)
 ```

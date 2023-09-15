@@ -36,7 +36,7 @@ extract_events <- function(threshold_detection,
     df <- update_events(txt = threshold_detection)
     df$filename <- stringr::str_replace(df$filename, "txt", format)
     file <- file.path(path, df[1, "filename"])
-  } else if(class(threshold_detection) == "threshold_detection") {
+  } else if (class(threshold_detection) == "threshold_detection") {
     df <- inspect_events(threshold_detection)
     file <- file.path(path, df[1, "filename"])
   }
