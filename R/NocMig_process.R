@@ -4,6 +4,8 @@
 #' @param folder folder to process
 #' @inheritParams batch_process
 #' @inheritParams NocMig_meta
+#' @export
+#'
 NocMig_process <- function(
     path = "E:/NocMig", folder = NULL,
     format = c("WAV", "wav", "mp3", "MP3"),
