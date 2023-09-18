@@ -12,7 +12,6 @@ Language: en-GB
 Encoding: UTF-8
 LazyData: true
 Imports: 
-    dynaSpec,
     tuneR,
     warbleR,
     viridis,
@@ -24,7 +23,6 @@ Imports:
     pbapply,
     stringr,
     magrittr,
-    ggplot2,
     jsonlite,
     openxlsx,
     readr,
