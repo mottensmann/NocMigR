@@ -1,7 +1,10 @@
 
-## NocMigR package
+## NocMigR package: (*Deprecated!*: See [NocMigR2](https://github.com/mottensmann/NocMigR2))
+
 
 ------------------------------------------------------------------------
+
+
 
 This package is in a *very* preliminary state and provides some
 workflows for processing large sound files (e.g., `NocMig`, `NFC`,
